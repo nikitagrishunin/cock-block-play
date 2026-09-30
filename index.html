@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<title>COCK BLOCK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&family=Rubik+Mono+One&display=swap">
+<style>
+/* Layout: one column of signage plates over a tiled restroom wall; the row itself is one scalable SVG scene. Single light look by choice. */
+:root{
+  --wall:#e2ebe9; --grout:#c9d6d3; --floor:#b5c1c4; --floor-line:#a1aeb2;
+  --ink:#15233b; --ink-soft:#4b5b71; --plate:#fbfcfb; --porcelain:#fdfefe; --porcelain-shade:#cddada; --chrome:#94a2a9;
+  --panel:#8ea1ab; --door:#6f8796; --alpha:#d9530e; --alpha-tint:#fbe3d4; --beta:#1d5fd1; --beta-tint:#d9e5fb;
+  --tape:#f2c21b; --good:#1c8048; --bad:#b8352a; --busy:#c7372b; --free:#23955a;
+  --display:"Rubik Mono One","Arial Black",Impact,sans-serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{
+  background-color:var(--wall);
+  background-image:linear-gradient(var(--grout) 1px,transparent 1px),linear-gradient(90deg,var(--grout) 1px,transparent 1px);
+  background-size:44px 44px;
+  color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.45;
+  padding-inline:16px; padding-block:16px 40px;
+}
+.app{max-width:760px;margin:0 auto;display:grid;gap:14px}
+.plate{background:var(--plate);border:2px solid var(--ink);border-radius:10px;padding:18px;min-width:0}
+/* Всплывающие бонусы и главный эффект хода (слово владельца 30.09): плашки «+10 Давление» всплывают над твоей фигурой
+   снизу вверх по очереди; главный эффект (самый большой вклад) впечатывается крупно под сценой и остаётся. */
+.stage{position:relative}
+.floats{position:absolute;inset:0;pointer-events:none;z-index:3}
+.fl{position:absolute;transform:translate(-50%,0);white-space:nowrap;background:var(--ink);color:var(--plate);border-radius:999px;padding:4px 11px;font-weight:800;font-size:15px;line-height:1.2;opacity:0;box-shadow:0 3px 0 rgba(0,0,0,.25);animation:floatUp 1.8s cubic-bezier(.2,.8,.3,1) both}
+.fl b{color:var(--acc);font-variant-numeric:tabular-nums}
+.fl.neg b{color:var(--bad)}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,12px) scale(.6)}12%{opacity:1;transform:translate(-50%,0) scale(1.12)}20%{transform:translate(-50%,-6px) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-150px) scale(1)}}
+.combo{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 12px;padding:10px 14px;border:2px solid var(--ink);border-radius:10px;background:var(--plate);text-align:center;animation:slam .4s cubic-bezier(.2,1.6,.4,1) var(--d,0s) both}
+.combo .c-name,.combo .c-val{font-family:var(--display);font-size:clamp(22px,6vw,34px);line-height:1}
+.combo .c-name{color:var(--acc);text-transform:uppercase}
+.combo .c-val{color:var(--ink)}
+.combo .c-mod{flex-basis:100%;font-family:var(--display);font-size:clamp(16px,4.4vw,22px);line-height:1.1;color:var(--acc);text-transform:uppercase;animation:slam .35s cubic-bezier(.2,1.6,.4,1) calc(var(--d,0s) + .3s) both}
+.combo .c-mod.neg{color:var(--bad)}
+.combo .c-det{flex-basis:100%;font-size:14px;color:var(--ink-soft)}
+.combo.neg .c-name,.combo.neg .c-val{color:var(--bad)}
+@keyframes slam{0%{opacity:0;transform:scale(2.2) rotate(-6deg)}60%{opacity:1;transform:scale(.94) rotate(-2deg)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.floats{display:none}.combo,.combo .c-mod{animation:none}}
+.splash{display:block;border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#15161a}
+.splash img{display:block;width:100%;height:auto}
+@media (max-width:600px){.splash img{aspect-ratio:1024/1536;max-height:64vh;object-fit:cover;object-position:50% 12%}}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.eyebrow{font-weight:700;font-size:12px;line-height:1.2;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin:0}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,9vw,56px);line-height:1.02}
+h2{font-size:clamp(20px,5.2vw,28px);line-height:1.1}
+p{margin:0}
+.lead{font-size:17px;max-width:60ch}
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.hero svg{width:64px;height:auto}
+[hidden]{display:none!important}
+.stack{display:grid;gap:10px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.alpha{--acc:var(--alpha);--acc-tint:var(--alpha-tint)}
+.beta{--acc:var(--beta);--acc-tint:var(--beta-tint)}
+.mode{appearance:none;font:inherit;color:inherit;text-align:left;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start;padding:18px;border-radius:10px;border:2px solid var(--ink);background:var(--plate)}
+.mode svg{grid-row:span 2;width:46px;height:auto}
+.mode .m-name{font-family:var(--display);font-size:26px;line-height:1;color:var(--acc)}
+.mode .m-text{font-size:15px;color:var(--ink-soft)}
+.mode:hover,.mode:focus-visible{background:var(--acc-tint);outline:3px solid var(--acc);outline-offset:2px}
+.note{font-size:14px;color:var(--ink-soft)}
+.best{font-size:14px;font-weight:700}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{font-family:var(--display);font-size:13px;letter-spacing:.04em;padding:6px 10px;border-radius:999px;background:var(--acc);color:var(--plate)}
+.count{font-weight:700;font-variant-numeric:tabular-nums}
+.link{appearance:none;background:none;border:0;font:inherit;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-left:auto;padding:6px 2px}
+.link:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:4px}
+.link-tight{margin-left:0}
+.link-left{margin-left:0;padding-left:0}
+.ptable{display:grid;gap:14px}
+.pgroup{display:grid;gap:6px}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) 92px 96px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--grout);font-size:15px}
+.prow label{min-width:0}
+.prow input{font:inherit;font-weight:700;width:100%;padding:6px 8px;border:2px solid var(--ink);border-radius:6px;background:var(--plate);color:var(--ink);text-align:right;font-variant-numeric:tabular-nums}
+.prow input:focus-visible{outline:3px solid var(--alpha);outline-offset:1px}
+.prow .kind{font-size:13px;color:var(--ink-soft)}
+.prow.changed input{border-color:var(--alpha);background:var(--alpha-tint)}
+.dots{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.jump{font:inherit;font-size:14px;font-weight:700;min-width:0;max-width:100%;padding:6px 8px;border:2px solid var(--ink);border-radius:8px;background:var(--plate);color:var(--ink)}
+.jump:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.dots i{height:6px;border-radius:3px;background:var(--grout)}
+.dots i.now{background:var(--ink)}
+.dots i.done{background:var(--acc)}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:13px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--acc-tint);color:var(--ink)}
+.tag.learn{background:var(--acc);color:var(--plate)}
+.scene{background:var(--plate);border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.scene svg{display:block;width:100%;height:auto;max-width:100%}
+.result{display:grid;gap:10px}
+.score{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:clamp(44px,13vw,72px);line-height:1;color:var(--acc);font-variant-numeric:tabular-nums}
+.lbl{font-family:var(--display);font-size:20px}
+/* Минус в альфе (слово владельца 30.09): красный процент, «альфа» перечёркнута, печать «Ублюдок». */
+.score{align-items:center}
+.score.neg .big{color:var(--bad)}
+.score.neg .lbl{color:var(--ink);text-decoration:line-through;text-decoration-thickness:4px;text-decoration-color:var(--bad)}
+.stamp{font-family:var(--display);font-size:clamp(20px,6vw,30px);line-height:1;letter-spacing:.06em;text-transform:uppercase;color:var(--bad);
+  border:4px solid var(--bad);border-radius:8px;padding:6px 12px;transform:rotate(-8deg);margin-left:6px;
+  animation:stamp .4s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stamp{from{transform:rotate(-8deg) scale(2.4);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.stamp{animation:none}}
+.why{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--grout)}
+.why li{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--grout);font-size:15px}
+.why .w-v{font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums;white-space:nowrap}
+.why .w-t{color:var(--ink);min-width:0}
+.why .w-b{font-weight:700;color:var(--ink)}
+.why li.has-sub{border-bottom:0;padding-bottom:3px}
+.why li.sub{padding:2px 0 2px 24px;border-bottom:0;font-size:13px}
+.why li.sub.last{border-bottom:1px solid var(--grout);padding-bottom:8px}
+.why li.sub .w-v{color:var(--ink-soft);font-weight:600}
+.why li.sub .w-t{color:var(--ink-soft)}
+.why li.neg .w-v,.why li.sub.neg .w-v,.why li.total.neg .w-v{color:var(--bad)}
+.why li.neg .w-b{color:var(--bad)}  /* название антибонуса («Детский», «Ублюдок») - красным */
+.why li.total{border-bottom:2px solid var(--ink);font-size:17px}
+.why li.total.has-sub{border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.why li.total .w-t{font-weight:700}
+.scale{font-size:14px;color:var(--ink-soft)}
+.better{font-size:15px;padding:10px 12px;border-radius:8px;background:var(--acc-tint)}
+.btn{appearance:none;font:inherit;font-weight:700;font-size:16px;min-height:48px;padding:12px 18px;border-radius:8px;border:2px solid var(--ink);background:var(--plate);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--plate)}
+.btn:hover{background:var(--acc-tint)}
+.btn.primary:hover{background:var(--acc);border-color:var(--acc)}
+.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.next-wrap{display:flex;justify-content:center}
+.next-wrap .btn{min-width:180px}
+.levels{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.levels li{display:grid;grid-template-columns:minmax(0,1fr) 88px 44px;gap:10px;align-items:center;font-size:14px}
+.levels .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.levels .track{height:8px;border-radius:4px;background:var(--grout);overflow:hidden}
+.levels .fill{height:100%;background:var(--acc)}
+.levels .pc{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.copied{font-size:14px;font-weight:700;color:var(--good)}
+.pop{animation:pop .35s ease-out}
+@keyframes pop{from{transform:translateY(8px);opacity:.4}to{transform:none;opacity:1}}
+
+/* SVG scene classes */
+.c-tile{fill:var(--wall)} .c-grout{stroke:var(--grout);stroke-width:2;fill:none}
+.c-floor{fill:var(--floor)} .c-floorline{stroke:var(--floor-line);stroke-width:2;fill:none}
+.c-base{fill:var(--panel)}
+.c-porc{fill:var(--porcelain);stroke:var(--porcelain-shade);stroke-width:3}
+.c-bowl{fill:var(--porcelain-shade)}
+.c-chrome{fill:var(--chrome)}
+.c-panel{fill:var(--panel)} .c-door{fill:var(--door)} .c-frame{fill:var(--ink)} .c-knob{fill:var(--tape)}
+.c-sdoor{fill:var(--wall);stroke:var(--panel);stroke-width:3}
+.c-arrow{fill:var(--ink)} .c-strip{fill:var(--plate)}
+.c-tape{fill:var(--tape)} .c-tapeink{fill:var(--ink)}
+.person{fill:var(--ink)} .you{fill:var(--acc)} .ghost{fill:var(--ink)}
+/* Альфа (слово владельца 30.09): после хода люди наклоняются от тебя - боятся, их щемят. Поворот вокруг ступней. */
+.lean{transform-box:fill-box;transform-origin:50% 100%;transform:rotate(var(--lean)) scale(var(--sx,1),1)}
+@media (prefers-reduced-motion:no-preference){
+  .lean{animation:lean .5s cubic-bezier(.34,1.56,.64,1) .45s both}
+  .lean.scared{animation:lean .5s cubic-bezier(.34,1.56,.64,1) .45s both,shiver .08s linear .95s 7}
+  .charge{animation:charge .45s cubic-bezier(.2,1.4,.4,1) .36s both}
+  .hop{animation:hop .36s cubic-bezier(.3,0,.7,1) both}
+  .thud{animation:thud .32s linear .34s}
+}
+/* Наезд оранжевого (вариант A владельца 30.09): рывок к тому, кого давит, крен к нему и раздулся. */
+.charge{transform-box:fill-box;transform-origin:50% 100%;transform:translateX(var(--dx,0px)) rotate(var(--lean,0deg)) scale(1.12,1.04)}
+@keyframes charge{0%{transform:none}45%{transform:translateX(calc(var(--dx,0px)*2)) rotate(calc(var(--lean,0deg)*1.5)) scale(1.2,1.06)}100%{transform:translateX(var(--dx,0px)) rotate(var(--lean,0deg)) scale(1.12,1.04)}}
+/* Прыжок и удар (слово владельца 30.09: «и то и то»): оранжевый подпрыгивает, тяжело приземляется с приседанием,
+   сцена вздрагивает; потом наезд, соседи отшатываются после удара. */
+.hop{transform-box:fill-box;transform-origin:50% 100%}
+@keyframes hop{0%{transform:none}15%{transform:scale(1.06,.9)}50%{transform:translateY(-52px) scale(.94,1.08)}85%{transform:translateY(0) scale(1.16,.84)}100%{transform:none}}
+@keyframes thud{0%,100%{transform:none}20%{transform:translate(-5px,4px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}}
+@keyframes lean{from{transform:rotate(0) scale(1,1)}to{transform:rotate(var(--lean)) scale(var(--sx,1),1)}}
+@keyframes shiver{0%,100%{transform:rotate(var(--lean)) scale(var(--sx,1),1)}50%{transform:rotate(calc(var(--lean)*.75)) scale(var(--sx,1),1)}}
+.tagbg{fill:var(--acc)} .tagtx{fill:var(--plate);font-family:var(--display);font-size:15px;text-anchor:middle}
+.ind-free{fill:var(--free)} .ind-busy{fill:var(--busy)}
+.t-sign{font-family:var(--display);font-size:15px;fill:var(--ink);text-anchor:middle}
+.t-lab{font-family:var(--body);font-size:17px;font-weight:700;fill:var(--ink-soft);text-anchor:middle}
+.t-num{font-family:var(--body);font-size:15px;font-weight:700;fill:var(--ink-soft);text-anchor:middle}
+.t-pct{font-family:var(--body);font-size:22px;font-weight:700;fill:var(--ink);text-anchor:middle;font-variant-numeric:tabular-nums}
+.t-best{fill:var(--good)}
+.t-pill{fill:var(--plate)}
+.slot{cursor:pointer;outline:none}
+.slot .hit{fill:var(--acc-tint);fill-opacity:0;stroke:var(--acc);stroke-opacity:.6;stroke-width:3;stroke-dasharray:10 8;pointer-events:all}
+.slot:hover .hit,.slot:focus-visible .hit{fill-opacity:1;stroke-opacity:1;stroke-dasharray:none}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
+</style>
+
+<div class="app">
+
+  <section id="start" class="stack">
+    <!-- Заставка (слово владельца 30.09): ChatGPT, трешовый игровой стиль; телефон - вертикальная, экран шире - широкая. -->
+    <picture class="splash">
+      <source media="(max-width: 600px)" srcset="splash-phone.webp">
+      <img src="splash-wide.webp" alt="COCK BLOCK: Альфа vs. Бета - один наваливается, другой отклоняется" width="1536" height="1024" decoding="async">
+    </picture>
+    <div class="plate stack">
+      <div class="hero">
+        <svg class="sr-only" viewBox="0 0 60 110" aria-hidden="true"><circle cx="30" cy="14" r="12" class="person"/><rect x="11" y="30" width="38" height="46" rx="14" class="person"/><rect x="14" y="66" width="13" height="42" rx="5" class="person"/><rect x="33" y="66" width="13" height="42" rx="5" class="person"/></svg>
+        <div class="stack">
+          <p class="eyebrow" id="startEyebrow">Альфа или бета</p>
+          <h1 class="sr-only">COCK BLOCK</h1>
+        </div>
+      </div>
+      <p class="lead">Заходишь в туалет. Ряд писсуаров, кто-то уже стоит. Куда встанешь? Игра считает, на сколько процентов твой выбор альфа или бета.</p>
+    </div>
+    <div class="modes">
+      <button class="mode alpha" id="goAlpha" type="button">
+        <svg viewBox="0 0 90 110" aria-hidden="true"><circle cx="45" cy="14" r="12" class="you"/><rect x="26" y="30" width="38" height="46" rx="14" class="you"/><path d="M28 36 L6 52 L20 66 L30 58" class="you"/><path d="M62 36 L84 52 L70 66 L60 58" class="you"/><rect x="29" y="66" width="13" height="42" rx="5" class="you"/><rect x="48" y="66" width="13" height="42" rx="5" class="you"/></svg>
+        <span class="m-name">Агрессор</span>
+        <span class="m-text">Главное - на скольких людей давишь напрямую. Дальше: прижми того, кому некуда отступить, поставь шлагбаум на проходе от двери и оставь следующим только места вплотную.</span>
+      </button>
+      <button class="mode beta" id="goBeta" type="button">
+        <svg viewBox="0 0 90 110" aria-hidden="true"><circle cx="45" cy="22" r="10" class="you"/><rect x="31" y="36" width="28" height="40" rx="11" class="you"/><rect x="33" y="68" width="10" height="40" rx="4" class="you"/><rect x="47" y="68" width="10" height="40" rx="4" class="you"/></svg>
+        <span class="m-name">Оборона</span>
+        <span class="m-text">Встань так, чтобы рядом никто не оказался. Учитывай дверь, перегородки и тех, кто зайдёт после тебя.</span>
+      </button>
+    </div>
+    <p class="note">Обе шкалы игра считает симуляцией: 3000 раз проигрывает, кто зайдёт следом и куда встанет.</p>
+    <p class="best" id="bestLine" hidden></p>
+    <p><button class="link link-left" id="openPoints2" type="button">Настроить баллы</button></p>
+  </section>
+
+  <section id="play" class="stack" hidden>
+    <div class="bar">
+      <span class="chip" id="modeChip">АЛЬФА</span>
+      <span class="count" id="lvlNum">Уровень 1</span>
+      <select class="jump" id="jump" aria-label="Перейти к уровню"></select>
+      <button class="link" id="openPoints" type="button">Баллы</button>
+      <button class="link link-tight" id="toMenu" type="button">Меню</button>
+    </div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="stack">
+      <h2 id="lvlName"></h2>
+      <p id="lvlTip"></p>
+      <div class="meta" id="lvlMeta"></div>
+    </div>
+    <div class="stage">
+      <div class="scene">
+        <div id="scene"></div>
+      </div>
+      <div class="floats" id="floats" aria-hidden="true"></div>
+    </div>
+    <div class="combo" id="combo" hidden></div>
+    <div class="next-wrap" id="nextWrap" hidden><button class="btn primary" id="next" type="button">Дальше</button></div>
+    <div class="plate result pop" id="result" hidden>
+      <div class="score" id="rScore"><span class="big" id="rPct">0%</span><span class="lbl" id="rLabel">альфа</span><span class="stamp" id="rStamp" hidden>Ублюдок</span></div>
+      <p id="rText"></p>
+      <p class="eyebrow">Баллы</p>
+      <ul class="why" id="rWhy"></ul>
+      <p class="better" id="rBetter" hidden></p>
+    </div>
+  </section>
+
+  <section id="points" class="plate stack" hidden>
+    <div class="bar"><h2>Баллы</h2><button class="link" id="closePoints" type="button">Закрыть</button></div>
+    <p class="note">Каждое действие даёт балл или множитель. Меняй число - уровень пересчитается сразу. Сохраняется в этом браузере.</p>
+    <div id="pointsTable" class="ptable"></div>
+    <div class="actions">
+      <button class="btn primary" id="copyPoints" type="button">Скопировать для Claude</button>
+      <button class="btn" id="resetPoints" type="button">Вернуть как было</button>
+    </div>
+    <p class="copied" id="pointsMsg" hidden></p>
+  </section>
+
+  <section id="end" class="stack" hidden>
+    <div class="plate stack">
+      <p class="eyebrow" id="eMode">Итог</p>
+      <div class="score"><span class="big" id="ePct">0%</span><span class="lbl" id="eLabel">альфа</span></div>
+      <h2 id="eTitle"></h2>
+      <p class="note" id="eNote">Средний процент за пройденные уровни.</p>
+    </div>
+    <div class="plate">
+      <ol class="levels" id="eList"></ol>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="copy" type="button">Скопировать результат</button>
+      <button class="btn" id="other" type="button">Сыграть за бету</button>
+      <button class="btn" id="again" type="button">Заново</button>
+      <button class="btn" id="home" type="button">В меню</button>
+    </div>
+    <p class="copied" id="copied" hidden></p>
+  </section>
+
+</div>
+
+<script id="logic">
+/* Логика отдельно от отрисовки: её гоняет проверка уровней. */
+const SIMS = 3000;
+const LEVELS = [
+  /* Обучение (слова владельца 30.09): от простого к нюансам - каждое правило вводится уровнем с плашкой «Новое правило» (step 1),
+     внутри раздела уровни идут по замеренной сложности; diff - сложность 1-5 по месту среди всех уровней. */
+  // 0. Пустой туалет
+  {name:"Три писсуара", learn:"Пустой туалет", step:1, diff:1, n:3, door:"left", people:[], k:1,
+   tip:{alpha:"Никого нет. Место у двери - Осирис, хранитель врат: +3, второе и третье - тайм-менеджмент: +2 и +1. Удобное место - где никто не стоит вплотную: каждое, которое ты оккупировал аурой, +2.", beta:"Три места, один зайдёт."}},
+  {name:"Четыре писсуара", learn:"Пустой туалет", step:2, diff:2, n:4, door:"right", people:[], k:1,
+   tip:{alpha:"Дверь справа. Шлагбаум: за каждое место, к которому следующему идти мимо тебя, +0,5.", beta:"Дверь справа, один зайдёт."}},
+  {name:"Пять писсуаров", learn:"Пустой туалет", step:3, diff:3, n:5, door:"left", people:[], k:2,
+   tip:{alpha:"Пять мест: тайм-менеджмент, шлагбаум или оккупация аурой - что важнее?", beta:"Пять мест, зайдут двое."}},
+  {name:"Семь писсуаров", learn:"Пустой туалет", step:4, diff:4, n:7, door:"right", people:[], k:2,
+   tip:{alpha:"Длинный пустой ряд. Потом появятся люди - а пока займи ряд сам.", beta:"Длинный пустой ряд, зайдут двое."}},
+  // 1. Давление
+  {name:"Первый сосед", learn:"Давление", step:1, diff:2, n:5, door:"left", people:[2], k:1,
+   tip:{alpha:"Встань вплотную к человеку - это давление, +5. Альфа не стоит в стороне.", beta:"Встань так, чтобы рядом никого не было."}},
+  {name:"Кто ближе", learn:"Давление", step:2, diff:3, n:6, door:"left", people:[3], k:1,
+   tip:{alpha:"Снова один человек. Вплотную к нему - главное правило альфы.", beta:"Один человек и один зайдёт после тебя."}},
+  // 2. Прижать к стене
+  {name:"К стене", learn:"Прижать к стене", step:1, diff:1, n:4, door:"right", people:[3], k:1,
+   tip:{alpha:"Если соседу некуда отступить - прямо за ним стена или дверь - ещё +5.", beta:"Человек в углу у двери."}},
+  {name:"Стена или простор", learn:"Прижать к стене", step:2, diff:2, n:6, door:"left", people:[0,3], k:1,
+   tip:{alpha:"Двое: один у стены, другой в середине. Кого прижать? Прижимает только то, что стоит прямо за соседом.", beta:"Двое, один зайдёт следом."}},
+  {name:"Дальняя стена", learn:"Прижать к стене", step:3, diff:3, n:5, door:"left", people:[4], k:1,
+   tip:{alpha:"Прижать можно и к дальней стене, не только к двери.", beta:"Человек в дальнем углу."}},
+  // 3. Прижать к соседу
+  {name:"К соседу", learn:"Прижать к соседу", step:1, diff:2, n:6, door:"left", people:[3,4], k:1,
+   tip:{alpha:"Сосед за спиной тоже не даёт отступить: прижми одного к другому.", beta:"Двое стоят рядом."}},
+  // 4. Ван Дамм
+  {name:"Между двумя", learn:"Ван Дамм", step:1, diff:1, n:5, door:"left", people:[1,3], k:1,
+   tip:{alpha:"Встань вплотную между двумя - это Ван Дамм: двойное присутствие ×1,5, по 7,5 вместо 5 на каждого.", beta:"Двое стоят через одно место."}},
+  {name:"Ван Дамм у двери", learn:"Ван Дамм", step:2, diff:1, n:5, door:"left", people:[0,2], k:1,
+   tip:{alpha:"Ван Дамм ×1,5. Если один из двоих ещё и прижат к двери, умножается и это.", beta:"Двое через одно место, один у двери."}},
+  {name:"Офис", learn:"Ван Дамм", step:3, diff:1, n:5, door:"left", people:[2,4], k:1,
+   tip:{alpha:"5 мест, 2 человека, дверь слева. Ищи, где встать между двумя.", beta:"5 мест, 2 человека, дверь слева. Зайдут ещё 1."}},
+  {name:"Двое", learn:"Ван Дамм", step:4, diff:2, n:7, door:"left", people:[2,4], k:2,
+   tip:{alpha:"Между ними одно место. Давить на двоих сильнее, чем прижать одного.", beta:"Двое через одно место, зайдут ещё двое."}},
+  {name:"Вокзал", learn:"Ван Дамм", step:5, diff:3, n:9, door:"left", people:[2,4], k:2,
+   tip:{alpha:"9 мест, 2 человека, дверь слева. Ищи, где встать между двумя.", beta:"9 мест, 2 человека, дверь слева. Зайдут ещё 2."}},
+  // 5. Шлагбаум и тайм-менеджмент
+  {name:"Шлагбаум", learn:"Шлагбаум и тайм-менеджмент", step:2, diff:4, n:7, door:"left", people:[3], k:2,
+   tip:{alpha:"Давить можно с двух сторон одинаково. Решают шлагбаум и тайм-менеджмент: шлагбаум - за каждое место, к которому следующему идти мимо тебя, +0,5; Осирис, хранитель врат - первое место у двери +3, тайм-менеджмент - второе +2, третье +1.", beta:"Один человек в середине, зайдут двое."}},
+  {name:"Дверь справа", learn:"Шлагбаум и тайм-менеджмент", step:3, diff:4, n:7, door:"right", people:[3], k:2,
+   tip:{alpha:"То же, но дверь справа. Какая сторона теперь сильнее?", beta:"Дверь справа, зайдут двое."}},
+  // 6. Оккупация
+  {name:"Спортзал", learn:"Оккупация", step:2, diff:1, n:6, door:"left", people:[0,1], k:3,
+   tip:{alpha:"6 мест, 2 человека, дверь слева. Займи аурой побольше удобных мест.", beta:"6 мест, 2 человека, дверь слева. Зайдут ещё 3."}},
+  {name:"Оккупируй побольше", learn:"Оккупация", step:3, diff:2, n:7, door:"left", people:[6], k:2,
+   tip:{alpha:"Оккупация аурой - бонус. Но давление всё равно главнее.", beta:"Человек в дальнем углу, зайдут двое."}},
+  {name:"Пустой ряд", learn:"Оккупация", step:4, diff:4, n:5, door:"right", people:[], k:2,
+   tip:{alpha:"Удобное место - где никто не стоит вплотную. Каждое, которое ты оккупировал аурой, +2.", beta:"Пусто, зайдут двое."}},
+  // 7. Ловушка
+  {name:"Некуда встать", learn:"Ловушка", step:1, diff:3, n:5, door:"left", people:[0,4], k:1,
+   tip:{alpha:"Ловушка: если свободное место вплотную к тебе - лучшее из оставшихся для следующего, он встанет к тебе, +2.", beta:"Двое по краям, один зайдёт."}},
+  {name:"Трое по краям", learn:"Ловушка", step:2, diff:2, n:7, door:"right", people:[0,3,6], k:2,
+   tip:{alpha:"Удобных мест нет изначально. Ловушка работает, только если место рядом с тобой для следующего не хуже остальных.", beta:"Трое, зайдут ещё двое."}},
+  // 8. Перегородка
+  {name:"Перегородка", learn:"Перегородка", step:1, diff:1, n:6, door:"left", people:[2], dividers:[2], k:1,
+   tip:{alpha:"Через перегородку давления нет. Но перегородка за спиной соседа - как стена.", beta:"Сосед за перегородкой почти не считается."}},
+  {name:"Кофейня", learn:"Перегородка", step:2, diff:1, n:4, door:"left", people:[1], dividers:[1], k:3,
+   tip:{alpha:"4 мест, 1 человек, дверь слева, перегородка. Перегородка за спиной соседа - как стена, а через неё давить нельзя.", beta:"4 мест, 1 человек, дверь слева, перегородка. Зайдут ещё 3."}},
+  {name:"Библиотека", learn:"Перегородка", step:3, diff:1, n:6, door:"left", people:[0,2,3], dividers:[2], k:2,
+   tip:{alpha:"6 мест, 3 человека, дверь слева, перегородка. Перегородка за спиной соседа - как стена, а через неё давить нельзя.", beta:"6 мест, 3 человека, дверь слева, перегородка. Зайдут ещё 2."}},
+  {name:"Две перегородки", learn:"Перегородка", step:4, diff:3, n:8, door:"left", people:[2,6], dividers:[1,4], k:2,
+   tip:{alpha:"Две перегородки режут ряд. Найди, кого они прижимают.", beta:"Две перегородки, зайдут двое."}},
+  {name:"Фестиваль", learn:"Перегородка", step:5, diff:5, n:9, door:"left", people:[5], dividers:[0], k:1,
+   tip:{alpha:"9 мест, 1 человек, дверь слева, перегородка. Перегородка за спиной соседа - как стена, а через неё давить нельзя.", beta:"9 мест, 1 человек, дверь слева, перегородка. Зайдут ещё 1."}},
+  // 9. Кабинка
+  {name:"Кабинка", learn:"Кабинка", step:1, diff:2, n:5, door:"left", people:[1,3], stall:true, k:1,
+   tip:{alpha:"Альфа в кабинке не прячется - это 0%. А для следующих кабинка - запасной выход.", beta:"Кабинка - законный ход беты."}},
+  {name:"Автосервис", learn:"Кабинка", step:2, diff:2, n:7, door:"right", people:[3,5], stall:true, k:1,
+   tip:{alpha:"7 мест, 2 человека, дверь справа, кабинка. Кабинка - запасной выход для следующих.", beta:"7 мест, 2 человека, дверь справа, кабинка. Зайдут ещё 1."}},
+  {name:"Аэропорт", learn:"Кабинка", step:3, diff:3, n:10, door:"left", people:[0,1], dividers:[6], stall:true, k:3,
+   tip:{alpha:"10 мест, 2 человека, дверь слева, перегородка, кабинка. Кабинка - запасной выход для следующих.", beta:"10 мест, 2 человека, дверь слева, перегородка, кабинка. Зайдут ещё 3."}},
+  {name:"Только рядом с людьми", learn:"Кабинка", step:4, diff:4, n:6, door:"left", people:[1,4], stall:true, k:1,
+   tip:{alpha:"Свободны только места рядом с людьми. Кабинка есть, но не для тебя.", beta:"Свободны только места рядом с людьми. Зато есть кабинка."}},
+  {name:"Музей", learn:"Кабинка", step:5, diff:5, n:9, door:"right", people:[0,6,7], stall:true, k:3,
+   tip:{alpha:"9 мест, 3 человека, дверь справа, кабинка. Кабинка - запасной выход для следующих.", beta:"9 мест, 3 человека, дверь справа, кабинка. Зайдут ещё 3."}},
+  // 10. Сломанный
+  {name:"Сломанный в углу", learn:"Сломанный", step:1, diff:1, n:5, door:"left", people:[4], broken:[3], k:1,
+   tip:{alpha:"Сломанный вплотную к человеку - демонстративно: +0,5 к множителю за каждого, кто видит. Видит один сосед - ×1,5.", beta:"Сломанный вплотную к человеку в углу."}},
+  {name:"Бар", learn:"Сломанный", step:2, diff:2, n:8, door:"left", people:[0,1,2,3], broken:[7], dividers:[0], k:2,
+   tip:{alpha:"8 мест, 4 человека, дверь слева, сломанный, перегородка. Сломанный у людей - демонстрация, без людей - позор.", beta:"8 мест, 4 человека, дверь слева, сломанный, перегородка. Зайдут ещё 2."}},
+  {name:"Сломанный далеко", learn:"Сломанный", step:3, diff:5, n:7, door:"left", people:[1], broken:[6], k:2,
+   tip:{alpha:"Ублюдок: сломанный без людей рядом - −5 за каждого взрослого, кто видит, −7,5 за ребёнка.", beta:"Сломанный в дальнем углу."}},
+  {name:"Концерт", learn:"Сломанный", step:4, diff:5, n:10, door:"left", people:[1], broken:[7], k:2,
+   tip:{alpha:"10 мест, 1 человек, дверь слева, сломанный. Сломанный у людей - демонстрация, без людей - позор.", beta:"10 мест, 1 человек, дверь слева, сломанный. Зайдут ещё 2."}},
+  {name:"Босс-файт", learn:"Сломанный", step:5, diff:5, n:10, door:"right", people:[4], broken:[0], k:2,
+   tip:{alpha:"10 мест, 1 человек, дверь справа, сломанный. Сломанный у людей - демонстрация, без людей - позор.", beta:"10 мест, 1 человек, дверь справа, сломанный. Зайдут ещё 2."}},
+  // 11. Техобслуживание
+  {name:"Техобслуживание", learn:"Техобслуживание", step:1, diff:4, n:6, door:"right", people:[2], broken:[1], k:1,
+   tip:{alpha:"Техобслуживание: сломанный за спиной соседа прижимает его к ремонту, как стена. А можно встать и на сам сломанный.", beta:"Человек рядом со сломанным."}},
+  {name:"Метро в час пик", learn:"Техобслуживание", step:2, diff:5, n:10, door:"right", people:[1], broken:[2], dividers:[2], k:3,
+   tip:{alpha:"10 мест, 1 человек, дверь справа, сломанный, перегородка. Прижми соседа к сломанному.", beta:"10 мест, 1 человек, дверь справа, сломанный, перегородка. Зайдут ещё 3."}},
+  // 12. Свидетели
+  {name:"Публика", learn:"Свидетели", step:1, diff:3, n:8, door:"left", people:[2,5,7], broken:[1], k:2,
+   tip:{alpha:"Сломанный вплотную к человеку: +0,5 к множителю за каждого, кто видит. Здесь видят трое.", beta:"Трое в комнате, у входа сломанный."}},
+  {name:"Позор при всех", learn:"Свидетели", step:2, diff:3, n:8, door:"left", people:[0,1,2], broken:[7], k:1,
+   tip:{alpha:"Ублюдок при трёх свидетелях: −5 за каждого, −15 всего.", beta:"Трое у входа, сломанный в дальнем углу."}},
+  {name:"Перегородка прячет", learn:"Свидетели", step:3, diff:4, n:8, door:"left", people:[3,6,7], broken:[2], dividers:[4], k:2,
+   tip:{alpha:"Перегородка закрывает обзор: кто за ней, тот не свидетель.", beta:"Перегородка делит ряд."}},
+  // 13. Детский
+  {name:"Детский рядом", learn:"Детский", step:1, diff:1, n:6, door:"left", people:[2], kid:[1], k:1,
+   tip:{alpha:"Детский писсуар: с него всё вдвое слабее - давление, аура, шлагбаум, ловушка. Не режется только близость к двери.", beta:"Детский вплотную к человеку."}},
+  {name:"Кинотеатр", learn:"Детский", step:2, diff:2, n:9, door:"left", people:[0,2,3,7], kid:[4], k:1,
+   tip:{alpha:"9 мест, 4 человека, дверь слева, детский. С детского всё вдвое слабее, кроме двери, а вот прижать к нему - можно.", beta:"9 мест, 4 человека, дверь слева, детский. Зайдут ещё 1."}},
+  {name:"Детский между двумя", learn:"Детский", step:3, diff:4, n:7, door:"right", people:[2,4], kid:[3], k:2,
+   tip:{alpha:"Между двумя - детский. Сам на нём стоять плохо, но детский за спиной соседа прижимает его, как стена.", beta:"Между двумя - детский писсуар."}},
+  {name:"Ночной клуб", learn:"Детский", step:4, diff:5, n:7, door:"left", people:[0,6], broken:[3], kid:[1], stall:true, k:1,
+   tip:{alpha:"7 мест, 2 человека, дверь слева, сломанный, детский, кабинка. С детского всё вдвое слабее, кроме двери, а вот прижать к нему - можно.", beta:"7 мест, 2 человека, дверь слева, сломанный, детский, кабинка. Зайдут ещё 1."}},
+  {name:"Чемпионат", learn:"Детский", step:5, diff:5, n:10, door:"right", people:[4,9], broken:[2], kid:[3], dividers:[0], k:1,
+   tip:{alpha:"10 мест, 2 человека, дверь справа, сломанный, детский, перегородка. С детского всё вдвое слабее, кроме двери, а вот прижать к нему - можно.", beta:"10 мест, 2 человека, дверь справа, сломанный, детский, перегородка. Зайдут ещё 1."}},
+  // 14. Второгодник
+  {name:"Второгодник", learn:"Второгодник", step:1, diff:1, n:6, door:"left", people:[3], kid:[4], k:1,
+   tip:{alpha:"Второгодник: прижми соседа к детскому писсуару - давление, загнан и ещё +2,5 сверху. Сам на детский не вставай.", beta:"Человек рядом с детским."}},
+  // 15. Ребёнок
+  {name:"Ребёнок у детского", learn:"Ребёнок", step:1, diff:2, n:7, door:"left", people:[5], kid:[1,3], child:[3], k:2,
+   tip:{alpha:"Вплотную к ребёнку - −50%. Детей не щемим.", beta:"Два детских: один пустой, у второго ребёнок."}},
+  {name:"Ресторан", learn:"Ребёнок", step:2, diff:4, n:7, door:"right", people:[2], kid:[6], child:[6], k:2,
+   tip:{alpha:"7 мест, 1 человек, дверь справа, ребёнок у детского. Вплотную к ребёнку не вставай.", beta:"7 мест, 1 человек, дверь справа, ребёнок у детского. Зайдут ещё 2."}},
+  {name:"Детсад", learn:"Ребёнок", step:3, diff:5, n:8, door:"left", people:[3], kid:[0,6], child:[6], k:2,
+   tip:{alpha:"Взрослый в середине, у дальнего детского - ребёнок.", beta:"Взрослый в середине, у дальнего детского - ребёнок."}},
+  // 16. Ребёнок-свидетель
+  {name:"Ребёнок смотрит", learn:"Ребёнок-свидетель", step:1, diff:5, n:7, door:"left", people:[3], broken:[2], kid:[6], child:[6], k:1,
+   tip:{alpha:"Сломанный вплотную ко взрослому, но видит ребёнок: −0,25 к множителю. Детей плохому не учим.", beta:"Сломанный рядом со взрослым, в углу ребёнок."}},
+  {name:"Ребёнок видит позор", learn:"Ребёнок-свидетель", step:2, diff:3, n:7, door:"left", people:[4], broken:[1], kid:[6], child:[6], k:1,
+   tip:{alpha:"Ублюдок при ребёнке: ребёнок-свидетель −7,5, взрослый −5.", beta:"Сломанный у входа, в углу ребёнок."}},
+  // 17. Всё вместе
+  {name:"Дверь по центру", learn:"Всё вместе", step:1, diff:3, n:7, door:"center", people:[0], k:2,
+   tip:{alpha:"Вход посередине: тайм-менеджмент и шлагбаум считаются от центра.", beta:"Вход посередине: встанешь напротив - все зайдут тебе в спину."}},
+  {name:"Университет", learn:"Всё вместе", step:2, diff:4, n:9, door:"center", people:[5], k:3,
+   tip:{alpha:"9 мест, 1 человек, вход по центру. Всё сразу. Считай внимательно.", beta:"9 мест, 1 человек, вход по центру. Зайдут ещё 3."}},
+  {name:"Торговый центр", learn:"Всё вместе", step:3, diff:4, n:9, door:"center", people:[1,2,3], broken:[5], k:2,
+   tip:{alpha:"9 мест, 3 человека, вход по центру, сломанный. Всё сразу. Считай внимательно.", beta:"9 мест, 3 человека, вход по центру, сломанный. Зайдут ещё 2."}},
+  {name:"Корпоратив", learn:"Всё вместе", step:4, diff:4, n:5, door:"center", people:[1,2], broken:[4], k:2,
+   tip:{alpha:"5 мест, 2 человека, вход по центру, сломанный. Всё сразу. Считай внимательно.", beta:"5 мест, 2 человека, вход по центру, сломанный. Зайдут ещё 2."}},
+  // Хардкор (слово владельца 30.09): можно жёстко ошибиться и взять большой множитель; генератор на логике игры.
+  {name:"Русская рулетка", learn:"Хардкор", step:2, diff:5, n:10, door:"right", people:[1, 2, 3, 4, 5, 6], broken:[7, 9], stall:true, k:2,
+   tip:{alpha:"Два сломанных. Один - джекпот при шести свидетелях, другой - позор при тех же шести.", beta:"10 мест, 6 человек, дверь справа, два сломанных, кабинка. Зайдут ещё 2."}},
+  {name:"Ван Дамм на обломках", learn:"Хардкор", step:2, diff:5, n:9, door:"right", people:[5, 6, 8], broken:[3, 7], k:1,
+   tip:{alpha:"Сломанный между двумя. Слышал про Ван Дамма?", beta:"9 мест, 3 человека, дверь справа, два сломанных. Зайдут ещё 1."}},
+  {name:"Перекрёсток", learn:"Хардкор", step:2, diff:5, n:8, door:"center", people:[4, 5, 6], broken:[1, 3], kid:[0], dividers:[0], k:3,
+   tip:{alpha:"Вход по центру, два сломанных, перегородка. Считай, кто тебя видит.", beta:"8 мест, 3 человека, вход по центру, два сломанных, детский, перегородка. Зайдут ещё 3."}},
+  {name:"Не при детях", learn:"Хардкор", step:2, diff:5, n:9, door:"right", people:[1, 2, 3, 5], broken:[6, 8], kid:[0], child:[0], stall:true, k:2,
+   tip:{alpha:"Ребёнок смотрит, сломанных два. Манит джекпот - но точно ли он лучший?", beta:"9 мест, 4 человека, дверь справа, два сломанных, ребёнок у детского, кабинка. Зайдут ещё 2."}},
+  {name:"Шаг до позора", learn:"Хардкор", step:2, diff:5, n:9, door:"left", people:[5, 6, 7, 8], broken:[3, 4], dividers:[1], k:3,
+   tip:{alpha:"Два сломанных рядом. Между джекпотом и позором - один шаг.", beta:"9 мест, 4 человека, дверь слева, два сломанных, перегородка. Зайдут ещё 3."}},
+  {name:"Финал", learn:"Всё вместе", step:5, diff:5, n:10, door:"center", people:[1,4,8], broken:[6], kid:[0,9], child:[9], dividers:[2], stall:true, k:4,
+   tip:{alpha:"Всё сразу: центр, ребёнок, сломанный, перегородка, кабинка.", beta:"Всё сразу. Зайдут ещё четверо."}},
+];
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function slotType(L,i){
+  if(i<0||i>=L.n) return "wall";
+  if(L.people.includes(i)) return "person";
+  if((L.broken||[]).includes(i)) return "broken";
+  if((L.child||[]).includes(i)) return "child";  // детский писсуар, у которого стоит ребёнок (правила - за владельцем)
+  if((L.kid||[]).includes(i)) return "kid";
+  return "free";
+}
+function divBetween(L,a,b){ return Math.abs(a-b)===1 && (L.dividers||[]).includes(Math.min(a,b)); }
+function options(L){ const o=[]; for(let i=0;i<L.n;i++) if(["free","broken","kid"].includes(slotType(L,i))) o.push(i); if(L.stall) o.push("stall"); return o; }
+/* Детский и сломанный можно выбрать (слово владельца 30.09) - это ловушки: 0% в обоих режимах. */
+const isTrap=r=>r.t==="broken"||r.t==="kid";
+/* БАЛЛЫ (слово владельца 30.09; числа - его, из панели «Баллы» 30.09): каждое действие даёт балл или множитель. Числа меняются в панели «Баллы» в игре
+   или прямо здесь. group - раздел панели, kind - что это за число. */
+const POINTS=[
+  {key:"person",   group:"Альфа: давление", kind:"балл",      v:5,     label:"Давление - на человека вплотную"},
+  {key:"pinned",   group:"Альфа: давление", kind:"балл",      v:5,     label:"Соседу некуда отступить: за ним стена, дверь, человек, перегородка, детский или сломанный"},
+  {key:"kidPin",   group:"Альфа: давление", kind:"балл",      v:2.5,   label:"Второгодник - сосед прижат к детскому писсуару: сверху"},
+  {key:"near",     group:"Альфа: давление", kind:"балл",      v:3,     label:"Предостережение - человек через одно место"},
+  {key:"train",    group:"Альфа: давление", kind:"балл",      v:2,     label:"Паровоз - двое подряд: давишь сквозь соседа на второго"},
+  {key:"spoil",    group:"Альфа: следующие", kind:"балл",     v:2,     label:"Аура - оккупировал удобное место (за каждое)"},
+  {key:"pass",     group:"Альфа: следующие", kind:"балл",     v:0.5,   label:"Шлагбаум - усложнил проход к свободному месту или кабинке (за каждое)"},
+  {key:"freeNbPts",group:"Альфа: следующие", kind:"балл",     v:2,     label:"Ловушка - свободное место вплотную, лучшее для следующего (за каждое)"},
+  {key:"combo",    group:"Альфа: множители", kind:"множитель", v:1.5,  label:"Ван Дамм: вплотную между двумя взрослыми - давление на каждого"},
+  {key:"brokenMul",group:"Альфа: множители", kind:"множитель", v:1,    label:"Закон не писан - сломанный вплотную к человеку: база (1 свидетель ×1,5, 2 - ×2, 3 - ×2,5)"},
+  {key:"brokenWitness",group:"Альфа: множители", kind:"к множителю", v:0.5, label:"Сломанный вплотную к человеку: + за каждого, кто видит"},
+  {key:"bastardAdult",group:"Альфа: ублюдок", kind:"балл", v:-5, label:"Ублюдок - сломанный без людей рядом: за каждого взрослого свидетеля"},
+  {key:"bastardKid",group:"Альфа: ублюдок", kind:"балл", v:-7.5, label:"Ублюдок: за каждого ребёнка-свидетеля"},
+  {key:"brokenChildNear",group:"Альфа: множители", kind:"от множителя", v:0.25, label:"Сломанный вплотную к взрослому: ребёнок видит - минус"},
+  {key:"kidPress", group:"Альфа: детский", kind:"множитель", v:0.5, label:"Детский писсуар: все баллы ×0,5, кроме двери (давление, аура, шлагбаум, ловушка)"},
+  {key:"door1",    group:"Альфа: тайм-менеджмент",    kind:"балл",      v:3,     label:"Осирис - хранитель врат: первое место у двери"},
+  {key:"door2",    group:"Альфа: тайм-менеджмент",    kind:"балл",      v:2,     label:"Тайм-менеджмент - второе место от двери"},
+  {key:"door3",    group:"Альфа: тайм-менеджмент",    kind:"балл",      v:1,     label:"Тайм-менеджмент - третье место от двери"},
+  {key:"childNear",group:"Альфа: к итогу", kind:"% к итогу",  v:-50,   label:"Вплотную к ребёнку"},
+  {key:"bNeighbor",group:"Бета", kind:"дискомфорт", v:1,    label:"К тебе встали вплотную"},
+  {key:"bDivider", group:"Бета", kind:"дискомфорт", v:0.3,  label:"Сосед за перегородкой"},
+  {key:"bPass",    group:"Бета", kind:"дискомфорт", v:0.15, label:"Прошёл за спиной (за каждого)"},
+];
+const POINTS_VERSION=84;  // поднимать, когда числа вписаны в код: старые сохранения в браузере сбрасываются
+const P={}; for(const x of POINTS) P[x.key]=x.v;
+const POINTS_DEFAULT={...P};
+const linear=t=>0;  // с 30.09 и сломанный, и детский - только множитель на все баллы, без % к итогу
+const nearChild=(L,o)=>o!=="stall"&&[-1,1].some(d=>slotType(L,o+d)==="child"&&!divBetween(L,o,o+d));
+
+function dec(x){ return String(Math.round(x*100)/100).replace(".",",").replace("-","−"); }
+function dec2(x){ return x.toFixed(2).replace(".",","); }
+
+/* Альфа = давление на тех, кто стоит + безысходность для тех, кто зайдёт.
+   Удобное место - свободный взрослый писсуар, где никто не стоит вплотную (перегородка защищает), или свободная кабинка.
+   Каждое удобное место, которое ты оккупировал аурой (стало неудобным из-за тебя), +P.spoil. Сломанный и детский не в счёт. */
+function comfy(L,taken){
+  const out=[];
+  for(let j=0;j<L.n;j++){
+    if(taken[j]||slotType(L,j)!=="free") continue;
+    if(![-1,1].some(d=>{ const m=j+d; return m>=0&&m<L.n&&taken[m]&&!divBetween(L,j,m); })) out.push(j);
+  }
+  if(L.stall) out.push("stall");
+  return out;
+}
+function alphaOf(L,o){
+  if(o==="stall") return {v:null,stall:true,special:null,mult:1,kidM:1,bM:1,witnesses:[],kidsSee:[],hidden:[],doorPts:0,nbPts:0,freeNb:[],base:0,press:0,kinds:[],sides:[],before:0,after:0,killed:0,lost:[],hopeless:false,behind:0,free:0,gate:0};
+  const special=slotType(L,o)==="free"?null:slotType(L,o);
+  const taken=new Array(L.n).fill(0); for(const i of L.people) taken[i]=1;
+  const before=comfy(L,taken).filter(x=>x!==o);
+  taken[o]=1;
+  const after=comfy(L,taken), lost=before.filter(x=>!after.includes(x));
+  const hopeless=before.length>0&&after.length===0, pr=pressure(L,o);
+  /* Шлагбаум (бывший «проход», слова владельца 30.09): ближе к двери сильнее - к любому месту за тобой следующему идти мимо тебя. */
+  /* v26, слово владельца 30.09: +1 за каждое свободное взрослое место, до которого идти мимо тебя; места у двери не вычитаются. */
+  const free=[]; for(let j=0;j<L.n;j++) if(!taken[j]&&slotType(L,j)==="free") free.push(j);
+  /* Кабинка тоже место для шлагбаума (слово владельца 30.09): если она за тобой, к ней идут мимо тебя. */
+  const behind=[...free,...(L.stall?["stall"]:[])].filter(x=>passesBehind(L,o,x==="stall"?stallX(L):x));
+  const gate=behind.length;
+  /* Слова владельца 30.09: множитель действует на давление на людей. Детский рядом с человеком - подозрительно,
+     давление делится на 3; сломанный рядом с человеком - демонстративно, давление × 1,5. */
+  /* Место под давление (слова владельца 30.09): +2 за свободное обычное место вплотную к тебе, только если для следующего
+     оно лучшее из оставшихся - меньше всего людей вплотную (ты тоже считаешься; кабинка - место без соседей). Тогда он
+     встанет именно к тебе. */
+  const adjCnt=j=>[-1,1].filter(d=>{ const m=j+d; return m>=0&&m<L.n&&taken[m]&&!divBetween(L,j,m); }).length;
+  const minAdj=L.stall?0:(free.length?Math.min(...free.map(adjCnt)):Infinity);
+  const freeNb=[-1,1].map(d=>o+d).filter(j=>j>=0&&j<L.n&&slotType(L,j)==="free"&&!divBetween(L,o,j)&&adjCnt(j)===minAdj);
+  const nbPts=P.freeNbPts*freeNb.length;
+  const direct=pr.kinds.some(k=>k!=="near"&&k!=="train");
+  /* Детский (слово владельца 30.09, v94): с детского всё вдвое слабее - давление, аура, шлагбаум, ловушка;
+     не режется только близость к двери (Осирис и Тайм-менеджмент). */
+  const mult=special==="kid"?P.kidPress:1, pressM=pr.sc;
+  /* Тайм-менеджмент (бывший «бонус двери», слова владельца 30.09): первое место от двери +3, второе +2, третье +1, остальные 0.
+     Дверь по центру - от центра: центральное место (или пара) и следующее кольцо. */
+  const dist=i=>L.door==="left"?i:L.door==="right"?L.n-1-i:Math.abs(i-(L.n-1)/2);
+  const rings=[...new Set(Array.from({length:L.n},(_,i)=>dist(i)))].sort((x,y)=>x-y);
+  const ring=rings.indexOf(dist(o));
+  const doorPts=[P.door1,P.door2,P.door3][ring]||0, doorRing=ring;
+  /* «Следующему некуда встать» отдельным баллом снят (вариант A владельца 30.09): дублировал «+2 за место рядом». */
+  /* Слово владельца 30.09: сломанный +5, только если с него давишь на человека вплотную; иначе −5. */
+  const core=pressM+P.spoil*lost.length+P.pass*gate+nbPts, sum=core*mult+doorPts;
+  /* Детский (вариант A владельца 30.09): делитель на все баллы хода, не только на давление. */
+  /* Слово владельца 30.09: сломанный - множитель на все баллы. Вплотную к человеку ×1,5 (демонстративное давление),
+     без людей вплотную ×0,5 (просто так занял сломанный). */
+  /* Свидетели (слова владельца 30.09): все в комнате - взрослые и дети, кроме тех, кого закрывает перегородка между вами.
+     Сломанный вплотную к человеку: ×1,5 и +0,5 за каждого свидетеля. Без людей вплотную: ×1 и −0,5 за каждого, может уйти в минус. */
+  const seen=x=>!(L.dividers||[]).some(d=>d>=Math.min(o,x)&&d<Math.max(o,x));
+  const everyone=[...L.people,...(L.child||[])];
+  const witnesses=L.people.filter(seen), kidsSee=(L.child||[]).filter(seen), hidden=everyone.filter(x=>!seen(x));
+  /* Слова владельца 30.09: ребёнок-свидетель - минус к множителю (детей плохому не учим): вплотную к взрослому −0,25,
+     без людей рядом −0,75 - просто так хулиганить при ребёнке хуже. */
+  const childPen=P.brokenChildNear;
+  /* Детский (слово владельца 30.09): один множитель, и чем больше свидетелей, тем хуже: ×1 и −0,5 за каждого, кто видит. */
+  const kidM=1;  // детский режет core (см. mult), дверь не трогает
+  /* «Закон не писан» (с человеком вплотную): множитель на все баллы, +0,5 за свидетеля, −0,25 за ребёнка.
+     «Ублюдок» (без людей рядом, слова владельца 30.09): без множителя и без базы - только штраф баллами за свидетелей. */
+  const bM=special==="broken"&&direct?P.brokenMul+P.brokenWitness*witnesses.length-P.brokenChildNear*kidsSee.length:1;
+  /* Штраф «Ублюдка» (слова владельца 30.09): −5 за каждого взрослого свидетеля, −7,5 за каждого ребёнка. */
+  const bastardPts=special==="broken"&&!direct?P.bastardAdult*witnesses.length+P.bastardKid*kidsSee.length:0;
+  return {v:sum*kidM*bM+bastardPts, sum, kidM, bM, bastardPts, witnesses, kidsSee, hidden, doorPts, doorRing, nbPts, freeNb, mult, core, direct, special, stall:false, press:pr.sc, pressM, kinds:pr.kinds, sides:pr.sides,
+          before:before.length, after:after.length, killed:lost.length, lost, hopeless, behind:behind.length, behindList:behind, free:free.length, gate};
+}
+/* Главное (слово владельца 30.09) - на скольких людей давишь напрямую: каждый сосед вплотную +PERSON, это перевешивает
+   всё остальное. Дальше добавки: насколько ему некуда отступить (альфа сам не отступает, его тыл не считается).
+   Отступ: сзади стена, человек или перегородка = 1, остался один шаг = 0,5, свободно = 0.
+   Между двумя - давишь на обоих. Через одно место от человека +0,3. Через перегородку давления нет. */
+/* Что прямо за спиной соседа (слово владельца 30.09): стена, дверь, человек, перегородка, детский (в т.ч. с ребёнком)
+   или сломанный - отступать некуда. Шаг до стены баллов не даёт. */
+function wallWhat(L,a,b){
+  if(b<0) return L.door==="left"?"дверь":"стена";
+  if(b>=L.n) return L.door==="right"?"дверь":"стена";
+  if(divBetween(L,a,b)) return "перегородка";
+  const t=slotType(L,b);
+  return t==="person"?"человек":t==="broken"?"сломанный":(t==="kid"||t==="child")?"детский":null;
+}
+function backInfo(L,x,d){
+  const b1=wallWhat(L,x,x+d); if(b1) return {v:1,why:"некуда, сзади "+b1,what:b1};
+  return {v:0,why:"есть куда",what:null};
+}
+const SLOT_WORD={free:"свободное место",broken:"сломанный писсуар",kid:"детский писсуар",child:"ребёнок у детского писсуара, детей не трогаем"};
+function pressure(L,p){
+  let sc=0; const kinds=[], sides=[];
+  for(const d of [-1,1]){
+    const j=p+d, side=d<0?"Слева":"Справа";
+    if(j<0||j>=L.n){ sides.push({side,pts:0,text:"стена, давить не на кого"}); continue; }
+    if(divBetween(L,p,j)){ sides.push({side,pts:0,text:"перегородка, через неё не давят"}); continue; }
+    const tj=slotType(L,j);
+    if(tj==="person"){
+      /* Второгодник (слово владельца 30.09): соседа прижал к детскому писсуару - ещё +P.kidPin сверху. */
+      const his=backInfo(L,j,d), pts=P.person+(his.v>=1?P.pinned:0)+(his.what==="детский"?P.kidPin:0);
+      sc+=pts; kinds.push(his.v>=1?"pin":"open");
+      sides.push({side,pts,nb:j,what:his.what,kind:his.v>=1?"pin":"open",text:`давишь на человека напрямую: +${dec(P.person)}. Ему отступать ${his.why}: ${his.v?"+"+dec(his.v):"0"}`});
+      /* Паровоз (слово владельца 30.09): двое подряд - давишь сквозь соседа на второго, +P.train. Детей и через перегородку - нет. */
+      if(his.what==="человек"&&P.train){ sc+=P.train; kinds.push("train"); sides.push({side,pts:P.train,nb:j+d,via:j,kind:"train",text:`за соседом ещё человек: паровоз`}); }
+    } else if(slotType(L,j+d)==="person"&&!divBetween(L,j,j+d)){
+      sc+=P.near; kinds.push("near"); sides.push({side,pts:P.near,nb:j+d,kind:"near",text:`${SLOT_WORD[tj]}, за ним человек: предостережение через одно место`});
+    } else sides.push({side,pts:0,text:`${SLOT_WORD[tj]}, людей вплотную нет`});
+  }
+  /* Ван Дамм (бывшее «комбо», слова владельца 30.09): вплотную между двумя взрослыми - давление на каждого × P.combo
+     (5 и 5 → 7,5 и 7,5). В разборе - одна строка «Ван Дамм - двойное присутствие №A и №B ×1,5». */
+  const direct=sides.filter(x=>x.kind==="pin"||x.kind==="open");
+  if(direct.length===2&&P.combo!==1) for(const x of direct){ const add=x.pts*(P.combo-1); x.pts+=add; x.combo=true; sc+=add; }
+  return {sc,kinds,sides};
+}
+
+/* Следующие входящие выбирают место по привычке - подальше от людей, поближе к двери, с долей случайности. */
+function doorX(L){ return L.door==="left" ? -0.8 : L.door==="right" ? L.n-0.2 : (L.n-1)/2; }
+function stallX(L){ return L.door==="right" ? -1.3 : L.n+0.3; }
+function walk(L,x){ const d=Math.abs(x-doorX(L)); return L.door==="center" ? d+1 : d; }
+function passesBehind(L,you,tx){
+  const dx=doorX(L);
+  if(L.door==="center" && Math.abs(you-dx)<0.5) return true;
+  return Math.min(dx,tx)<you && you<Math.max(dx,tx);
+}
+function simulate(L,choice,seed){
+  const rnd=mulberry32(seed), n=L.n, SX=stallX(L), T=0.5;
+  let sumD=0,sumN=0,sumP=0,sumPart=0,sumPc=0; const occ=new Array(n).fill(0);
+  for(let s=0;s<SIMS;s++){
+    const taken=new Array(n).fill(0); for(const i of L.people) taken[i]=1;
+    let stallTaken=choice==="stall";
+    if(choice!=="stall") taken[choice]=2;
+    let full=false,part=0,passes=0;
+    if(choice!=="stall") for(const d of [-1,1]){ const j=choice+d; if(j>=0&&j<n&&taken[j]===1){ if(divBetween(L,choice,j)) part+=P.bDivider; else full=true; } }
+    for(let k=0;k<L.k;k++){
+      const opts=[],us=[];
+      for(let j=0;j<n;j++){
+        if(taken[j]||slotType(L,j)!=="free") continue;
+        let adj=0; for(const d of [-1,1]){ const m=j+d; if(m>=0&&m<n&&taken[m]) adj+=divBetween(L,j,m)?0.3:1; }
+        let nd=4; for(let m=0;m<n;m++) if(taken[m]) nd=Math.min(nd,Math.abs(m-j));
+        us.push(-2.5*adj+0.4*nd-0.12*walk(L,j)); opts.push(j);
+      }
+      if(L.stall&&!stallTaken){ us.push(-1.2-0.12*walk(L,SX)); opts.push("stall"); }
+      if(!opts.length) break;
+      const mx=Math.max(...us); let tot=0; const ws=us.map(u=>{const w=Math.exp((u-mx)/T); tot+=w; return w;});
+      let r=rnd()*tot, pick=opts[opts.length-1];
+      for(let q=0;q<ws.length;q++){ r-=ws[q]; if(r<=0){ pick=opts[q]; break; } }
+      if(pick==="stall") stallTaken=true;
+      else {
+        taken[pick]=1; occ[pick]++;
+        if(choice!=="stall"&&Math.abs(pick-choice)===1){ if(divBetween(L,pick,choice)) part+=P.bDivider; else full=true; }
+      }
+      const tx=pick==="stall"?SX:pick;
+      if(choice!=="stall"&&passesBehind(L,choice,tx)) passes++;
+    }
+    const pc=full?0:Math.min(1,part);
+    sumD+=(full?P.bNeighbor:pc)+P.bPass*passes; sumN+=full?1:0; sumP+=passes; sumPart+=pc>0?1:0; sumPc+=pc;
+  }
+  const adjNow=choice!=="stall"&&[-1,1].some(d=>slotType(L,choice+d)==="person"&&!divBetween(L,choice,choice+d));
+  return {D:sumD/SIMS, pN:sumN/SIMS, passes:sumP/SIMS, pDiv:sumPart/SIMS, pc:sumPc/SIMS, adjNow, occ:occ.map(c=>c/SIMS)};
+}
+function computeLevel(li){
+  const L=LEVELS[li];
+  const res=options(L).map(o=>({o, t:o==="stall"?"stall":slotType(L,o), nearChild:nearChild(L,o), b:simulate(L,o,1000*li+(o==="stall"?99:o)+7), a:alphaOf(L,o)}));
+  const norm=res.filter(r=>!isTrap(r));
+  /* Слово владельца 30.09: 100% - лучший обычный ход (без ловушек и без ребёнка вплотную); выйти за 100% можно. */
+  const clean=norm.filter(r=>r.a.v!==null&&!r.nearChild), ref0=clean.length?clean:norm.filter(r=>r.a.v!==null);
+  /* v98, слово владельца 30.09: 100% - лучший ход БЕЗ НАПАДЕНИЯ (никого не давишь вплотную; «Предостережение» -
+     не нападение), всё с нападением идёт выше 100%. Если каждое обычное место вплотную к человеку - база прежняя. */
+  const calm=clean.filter(r=>!r.a.direct), ref=calm.length&&Math.max(...calm.map(r=>r.a.v))>0?calm:ref0;
+  const amax=Math.max(...ref.map(r=>r.a.v));
+  const bd=norm.map(r=>r.b.D), bmax=Math.max(...bd), bmin=Math.min(...bd), span=Math.max(bmax-bmin,0.15);
+  for(const r of res){
+    r.aBase = r.a.v===null ? 0 : amax<=0 ? 100 : Math.round(100*r.a.v/amax);  // минус баллы - минус процент
+    r.aRaw = r.aBase + linear(r.t) + (r.nearChild?P.childNear:0);  // процент позиции + линейные баллы
+    r.bPct = isTrap(r) ? 0 : Math.round(100-100*(r.b.D-bmin)/span);
+  }
+  for(const r of res) r.aPct=r.aRaw;
+  res.aRef=[...ref].sort((x,y)=>y.a.v-x.a.v)[0];
+  const byPct=(k,list)=>[...list].sort((x,y)=>y[k]-x[k]);
+  res.aBest=byPct("aPct",res)[0]; res.aWorst=byPct("aPct",res).at(-1);
+  res.bBest=byPct("bPct",norm)[0]; res.bWorst=byPct("bPct",norm).at(-1);
+  return res;
+}
+</script>
+
+<script>
+const U=100;
+const st={screen:"start",mode:"alpha",li:0,chosen:null,results:[],calc:null};
+const $=id=>document.getElementById(id);
+const MODE_NAME={alpha:"альфа",beta:"бета"};
+
+function plural(n,one,few,many){const a=n%10,b=n%100; if(a===1&&b!==11) return one; if(a>=2&&a<=4&&(b<10||b>=20)) return few; return many;}
+function loadBest(){ try{ return JSON.parse(localStorage.getItem("ab-best")||"{}")||{}; }catch(e){ return {}; } }
+function saveBest(mode,v){ try{ const b=loadBest(); if(!(b[mode]>=v)){ b[mode]=v; localStorage.setItem("ab-best",JSON.stringify(b)); } }catch(e){} }
+
+function geom(L){
+  const stallSide=L.stall ? (L.door==="right"?"left":"right") : null;
+  const g={}; let x=16;
+  if(L.door==="left"){ g.doorX=x+4; x+=92; }
+  if(stallSide==="left"){ g.stallX=x; x+=136; }
+  g.rowX=x; x+=L.n*U;
+  if(stallSide==="right"){ g.stallX=x+16; x+=136; }
+  if(L.door==="right"){ g.doorX=x+16; x+=92; }
+  g.W=x+16; g.H=L.door==="center"?340:300;
+  return g;
+}
+const cxOf=(g,i)=>g.rowX+i*U+U/2;
+
+function urinalSVG(cx,kid){
+  if(kid) return `<rect x="${cx-3}" y="84" width="6" height="26" class="c-chrome"/><circle cx="${cx}" cy="84" r="5" class="c-chrome"/>`+
+    `<path d="M${cx-22},110 h44 v28 q0,36 -22,36 q-22,0 -22,-36 z" class="c-porc"/><path d="M${cx-12},120 h24 v16 q0,24 -12,24 q-12,0 -12,-24 z" class="c-bowl"/>`+
+    `<rect x="${cx-3}" y="174" width="6" height="24" class="c-chrome"/>`;
+  return `<rect x="${cx-4}" y="30" width="8" height="36" class="c-chrome"/><circle cx="${cx}" cy="30" r="7" class="c-chrome"/>`+
+    `<path d="M${cx-30},66 h60 v44 q0,52 -30,52 q-30,0 -30,-52 z" class="c-porc"/><path d="M${cx-18},80 h36 v28 q0,36 -18,36 q-18,0 -18,-36 z" class="c-bowl"/>`+
+    `<rect x="${cx-3}" y="162" width="6" height="36" class="c-chrome"/>`;
+}
+function personSVG(cx,cls,op){
+  const o=op!=null?` fill-opacity="${op.toFixed(2)}"`:"";
+  return `<g class="${cls}"${o}><circle cx="${cx}" cy="64" r="17"/><rect x="${cx-27}" y="86" width="54" height="80" rx="20"/>`+
+    `<rect x="${cx-21}" y="150" width="17" height="84" rx="6"/><rect x="${cx+4}" y="150" width="17" height="84" rx="6"/></g>`;
+}
+function childSVG(cx){
+  return `<g class="person"><circle cx="${cx}" cy="100" r="13"/><rect x="${cx-19}" y="117" width="38" height="56" rx="15"/>`+
+    `<rect x="${cx-15}" y="160" width="12" height="72" rx="5"/><rect x="${cx+3}" y="160" width="12" height="72" rx="5"/></g>`;
+}
+/* Наклон от тебя в альфе: вплотную 16° (сжался и вздрагивает), через одно место 9°, дальше 4°; за перегородкой не боятся. */
+function leanOf(L,i){
+  if(st.mode!=="alpha"||st.chosen===null||st.chosen==="stall") return 0;
+  const o=st.chosen, d=Math.abs(i-o);
+  if((L.dividers||[]).some(x=>x>=Math.min(i,o)&&x<Math.max(i,o))) return 0;
+  const deg=d===1?16:d===2?9:4;
+  return i<o?-deg:deg;
+}
+function leanWrap(svg,deg){
+  if(!deg) return svg;
+  const close=Math.abs(deg)>=16;
+  return `<g class="lean${close?" scared":""}" style="--lean:${deg}deg${close?";--sx:.9":""}">${svg}</g>`;
+}
+/* Наезд: крен к ближайшему взрослому (вплотную 10°, через одно место 6°); люди на равном расстоянии с двух сторон
+   или никого рядом - только раздувается. Детей не давим - к ним не кренится. */
+function chargeOf(L){
+  if(st.mode!=="alpha"||st.chosen===null||st.chosen==="stall") return null;
+  const o=st.chosen, dist=d=>{ for(let k=1;k<=2;k++){ const j=o+d*k; if(j<0||j>=L.n||divBetween(L,j-d,j)) return 0; if(L.people.includes(j)) return k; } return 0; };
+  const l=dist(-1), r=dist(1), k=(l&&r)?(l===r?0:Math.min(l,r)):(l||r);
+  if(!k) return {deg:0,dx:0};
+  const sign=(k===l&&!(r&&r<l))?-1:1, deg=k===1?10:6;
+  return {deg:sign*deg,dx:sign*6};
+}
+function chargeWrap(svg,c){ return c?`<g class="hop"><g class="charge" style="--lean:${c.deg}deg;--dx:${c.dx}px">${svg}</g></g>`:svg; }
+function youTag(cx){ return `<rect x="${cx-26}" y="4" width="52" height="26" rx="13" class="tagbg"/><text x="${cx}" y="23" class="tagtx">ТЫ</text>`; }
+function labelSVG(cx,y,text,cls){ return `<text x="${cx}" y="${y}" class="${cls}">${text}</text>`; }
+function pillSVG(cx,y,text,best){ return `<rect x="${cx-48}" y="${y-22}" width="96" height="30" rx="15" class="tagbg"/><text x="${cx}" y="${y}" class="t-pct t-pill">${text}</text>`; }
+
+function renderScene(){
+  const L=LEVELS[st.li], g=geom(L), rev=st.chosen!==null, R=st.calc;
+  const byO=o=>R.find(r=>r.o===o);
+  const pctKey=st.mode==="alpha"?"aPct":"bPct";
+  const bestPct=Math.max(...R.map(r=>r[pctKey]));
+  const labY=286;
+  const thud=st.mode==="alpha"&&rev&&st.chosen!=="stall";
+  let s=`<svg viewBox="0 0 ${g.W} ${g.H}"${thud?` class="thud"`:""} role="group" aria-label="Ряд писсуаров, уровень ${st.li+1}">`;
+  s+=`<defs><pattern id="tile" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" class="c-tile"/><path d="M40 0H0V40" class="c-grout"/></pattern>`+
+     `<pattern id="floorp" width="60" height="30" patternUnits="userSpaceOnUse"><rect width="60" height="30" class="c-floor"/><path d="M60 0H0V30" class="c-floorline"/></pattern>`+
+     `<pattern id="haz" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="16" height="16" class="c-tape"/><rect width="8" height="16" class="c-tapeink"/></pattern></defs>`;
+  s+=`<rect x="0" y="0" width="${g.W}" height="200" fill="url(#tile)"/><rect x="0" y="200" width="${g.W}" height="${g.H-200}" fill="url(#floorp)"/><rect x="0" y="196" width="${g.W}" height="6" class="c-base"/>`;
+
+  /* Оранжевая полоса оккупации на полу снята (слово владельца 30.09): аура видна в разборе. */
+
+  if(L.door==="left"||L.door==="right"){
+    const dx=g.doorX, left=L.door==="left";
+    s+=`<rect x="${dx-4}" y="36" width="68" height="166" class="c-frame"/><rect x="${dx}" y="40" width="60" height="160" class="c-door"/><circle cx="${left?dx+48:dx+12}" cy="124" r="5" class="c-knob"/>`;
+    s+=labelSVG(dx+30,28,"ВХОД","t-sign");
+    s+= left ? `<path d="M${dx+2},251 h32 v-10 l20,16 l-20,16 v-10 h-32 z" class="c-arrow"/>`
+             : `<path d="M${dx+58},251 h-32 v-10 l-20,16 l20,16 v-10 h32 z" class="c-arrow"/>`;
+  }
+  if(L.door==="center"){
+    const cx=g.rowX+L.n*U/2;
+    s+=`<rect x="0" y="300" width="${g.W}" height="40" class="c-strip"/><path d="M${cx-10},336 v-16 h-12 l22,-18 l22,18 h-12 v16 z" class="c-arrow"/>`;
+    s+=`<text x="${cx-40}" y="327" class="t-sign" text-anchor="end">ВХОД</text><text x="${cx+40}" y="327" class="t-sign" text-anchor="start">ВХОД</text>`;
+  }
+
+  for(const d of (L.dividers||[])){ const x=g.rowX+(d+1)*U; s+=`<rect x="${x-6}" y="52" width="12" height="176" rx="3" class="c-panel"/>`; }
+
+  if(L.stall){
+    const sx=g.stallX, cx=sx+60, sel=!rev, mine=st.chosen==="stall";
+    s+=`<g${sel?` class="slot" data-o="stall" tabindex="0" role="button" aria-label="Кабинка №${L.n+1}"`:""}>`;
+    if(sel) s+=`<rect class="hit" x="${sx-6}" y="14" width="132" height="254" rx="12"/>`;
+    s+=`<rect x="${sx}" y="34" width="120" height="200" rx="4" class="c-panel"/><rect x="${sx+12}" y="46" width="96" height="182" rx="3" class="c-sdoor"/>`;
+    s+=labelSVG(cx,19,"№"+(L.n+1),"t-num")+labelSVG(cx,82,"WC","t-sign")+`<rect x="${cx-16}" y="96" width="32" height="12" rx="6" class="${mine?"ind-busy":"ind-free"}"/><circle cx="${sx+92}" cy="150" r="5" class="c-knob"/>`;
+    if(mine) s+=youTag(cx);
+    s+=`</g>`;
+    /* Подписи типов мест сняты (слово владельца 30.09): что есть что - видно по рисунку. */
+    if(rev){ const r=byO("stall"), top=r[pctKey]===bestPct, txt=(top?"★ ":"")+fmtPct(r[pctKey]);
+      s+= mine ? pillSVG(cx,labY,txt,top) : labelSVG(cx,labY,txt,"t-pct"+(top?" t-best":"")); }
+  }
+
+  const occ = (rev&&st.mode==="beta") ? byO(st.chosen).b.occ : null;
+  for(let i=0;i<L.n;i++){
+    const t=slotType(L,i), cx=cxOf(g,i), pickable=t==="free"||t==="broken"||t==="kid", sel=pickable&&!rev;
+    s+=`<g${sel?` class="slot" data-o="${i}" tabindex="0" role="button" aria-label="Писсуар ${i+1}${t==="kid"?", детский":t==="broken"?", сломан":""}"`:""}>`;
+    if(sel) s+=`<rect class="hit" x="${cx-U/2+6}" y="14" width="${U-12}" height="254" rx="12"/>`;
+    s+=urinalSVG(cx,t==="kid"||t==="child")+labelSVG(cx,19,"№"+(i+1),"t-num");
+    if(t==="child") s+=leanWrap(childSVG(cx),leanOf(L,i));
+    if(t==="broken") s+=`<g transform="rotate(-18 ${cx} 110)"><rect x="${cx-46}" y="100" width="92" height="20" fill="url(#haz)"/></g>`;
+    if(t==="person") s+=leanWrap(personSVG(cx,"person"),leanOf(L,i));
+    if(occ&&occ[i]>0.03) s+=personSVG(cx,"ghost",0.12+0.55*occ[i]);
+    if(st.chosen===i) s+=chargeWrap(personSVG(cx,"you"),chargeOf(L))+youTag(cx);
+    s+=`</g>`;
+    if(pickable&&rev){ const r=byO(i), top=r[pctKey]===bestPct, txt=(top?"★ ":"")+fmtPct(r[pctKey]);
+      s+= st.chosen===i ? pillSVG(cx,labY,txt,top) : labelSVG(cx,labY,txt,"t-pct"+(top?" t-best":"")); }
+  }
+  s+=`</svg>`;
+  $("scene").innerHTML=s;
+}
+
+/* Кабинка нумеруется следующим номером после писсуаров (слово владельца 30.09): 5 писсуаров - кабинка №6. */
+const nameOf=o=>"№"+(o==="stall"?LEVELS[st.li].n+1:o+1);
+const pctWord=x=>Math.round(x*100)+"%";
+const fmtPct=x=>(x<0?"−":"")+Math.abs(x)+"%";
+/* Разбор хода (слово владельца 30.09): слева оранжевым - что дал пункт (+, ×, −), справа - за что. Только то, что сработало. */
+/* Антибонус (минус, ÷, множитель меньше 1) - число красным (слово владельца 30.09). */
+const isNegVal=v=>{ v=String(v); if(/^[−\-÷]/.test(v)) return true; if(v[0]==="×"){ const x=parseFloat(v.slice(1).replace("−","-").replace(",",".")); return x<1; } return false; };
+function item(v,t,cls){ const c=[cls,isNegVal(v)?"neg":""].filter(Boolean).join(" "); return `<li${c?` class="${c}"`:""}><span class="w-v">${v}</span><span class="w-t">${t}</span></li>`; }
+const TO={"стена":"к стене","дверь":"к двери","человек":"к соседу","перегородка":"к перегородке","сломанный":"к сломанному","детский":"к детскому"};
+function pressText(s){
+  const cb=s.combo?`, Ван Дамм ×${String(P.combo).replace(".",",")}`:"", D=`<b class="w-b">Давление</b> - `;
+  /* Слово владельца 30.09: у стены - «№5 загнан к стене»; остальное (дверь, сосед, перегородка...) - «прижал». */
+  /* Слова владельца 30.09: соседа держит детский - «Второгодник - №5, бежать только с потерями». */
+  if(s.kind==="pin"&&s.what==="детский") return `<b class="w-b">Второгодник</b> - ${nameOf(s.nb)}, бежать только с потерями${cb}`;
+  /* Слово владельца 30.09: соседа держит сломанный - «Техобслуживание - №3 прижат к ремонту». */
+  if(s.kind==="pin"&&s.what==="сломанный") return `<b class="w-b">Техобслуживание</b> - ${nameOf(s.nb)} прижат к ремонту${cb}`;
+  if(s.kind==="pin") return s.what==="стена" ? `${D}${nameOf(s.nb)} загнан к стене${cb}` : `${D}прижал ${nameOf(s.nb)} ${TO[s.what]}${cb}`;
+  if(s.kind==="open") return `${D}на ${nameOf(s.nb)}${cb}`;
+  if(s.kind==="train") return `<b class="w-b">Паровоз</b> - ${nameOf(s.nb)} за ${nameOf(s.via)}`;
+  /* Слово владельца 30.09: давление через одно место называется «Предостережение». */
+  return `<b class="w-b">Предостережение</b> - ${nameOf(s.nb)} через одно место`;
+}
+const xf=m=>"×"+(m<0?"−":"")+String(Math.abs(Math.round(m*100)/100)).replace(".",",");
+const sg=x=>(x<0?"−":"+")+dec(Math.abs(x));
+const sgp=x=>(x<0?"−":"+")+Math.abs(x)+"%";
+function alphaItems(r){
+  /* n - вклад строки в баллах, по нему строки идут от большего к меньшему (слово владельца 30.09).
+     sub - из чего сложилась строка: показывается ниже с отступом (слово владельца 30.09). */
+  const a=r.a, it=[], refV=(st.calc&&st.calc.aRef&&st.calc.aRef.a.v)||P.person;
+  if(a.stall) return [{v:"0%",t:`спрятался в кабинку ${nameOf("stall")} - альфа так не делает`,n:0}];
+  const pinWord=z=>z.what==="стена"?`${nameOf(z.nb)} загнан к стене`:z.what==="сломанный"?`${nameOf(z.nb)} прижат к ремонту`:z.what==="детский"?`${nameOf(z.nb)} прижат к детскому`:`${nameOf(z.nb)} прижат ${TO[z.what]}`;
+  const sideSub=z=>z.kind==="train"?[{v:sg(P.train),t:`паровоз: ${nameOf(z.nb)} за ${nameOf(z.via)}`}]
+    :z.kind==="near"?[{v:sg(P.near),t:`предостережение ${nameOf(z.nb)} через одно место`}]
+    :[{v:sg(P.person),t:`давление на ${nameOf(z.nb)}`}].concat(z.kind==="pin"?[{v:sg(P.pinned),t:pinWord(z)}]:[]).concat(z.what==="детский"?[{v:sg(P.kidPin),t:"второгодник: бежать только с потерями"}]:[]);
+  const vd=a.sides.filter(x=>x.combo);
+  if(vd.length===2){
+    const pins=vd.filter(z=>z.kind==="pin").map(pinWord);
+    it.push({v:"+"+dec(vd[0].pts+vd[1].pts),t:`<b class="w-b">Ван Дамм</b> - двойное присутствие ${nameOf(vd[0].nb)} и ${nameOf(vd[1].nb)}`+(pins.length?`; ${pins.join(", ")}`:""),n:vd[0].pts+vd[1].pts,
+      sub:[...sideSub(vd[0]),...sideSub(vd[1]),{v:xf(P.combo),t:"Ван Дамм - двойное присутствие"}]});
+  }
+  for(const z of a.sides) if(z.pts&&!(vd.length===2&&z.combo)){
+    const sub=sideSub(z); it.push({v:"+"+dec(z.pts),t:pressText(z),n:z.pts,sub:sub.length>1?sub:null});
+  }
+  if(r.t==="broken"){
+    const hid=a.hidden.map(x=>({v:"0",t:`${nameOf(x)} за перегородкой - не видит`}));
+    if(a.direct){
+      /* «Закон не писан» - множитель на все баллы. */
+      const sub=[{v:xf(P.brokenMul),t:"база: сломанный вплотную к человеку"}];
+      for(const x of a.witnesses) sub.push({v:"+"+dec(P.brokenWitness),t:`${nameOf(x)} видит`});
+      for(const x of a.kidsSee) sub.push({v:"−"+dec(P.brokenChildNear),t:`ребёнок ${nameOf(x)} видит`});
+      sub.push(...hid,{v:xf(a.bM),t:`все баллы ${dec(a.sum)} → ${dec(a.sum*a.bM)}`});
+      it.push({v:xf(a.bM),t:`<b class="w-b">Закон не писан</b> - демонстративно ломаешь систему`,n:a.sum*a.bM-a.sum,g:1,sub});
+    } else {
+      /* «Ублюдок» - только штраф баллами за свидетелей. */
+      const sub=[];
+      for(const x of a.witnesses) sub.push({v:sg(P.bastardAdult),t:`${nameOf(x)} видит`});
+      for(const x of a.kidsSee) sub.push({v:sg(P.bastardKid),t:`ребёнок ${nameOf(x)} видит`});
+      sub.push(...hid);
+      it.push({v:a.bastardPts?sg(a.bastardPts):"0",t:`<b class="w-b">Ублюдок</b> - сломанный просто так, людей рядом нет`+(a.bastardPts?"":", но никто не видит"),n:a.bastardPts,sub:sub.length?sub:null});
+    }
+  }
+  if(r.t==="kid"){
+    /* v94: −50% ко всем баллам, кроме близости к двери. */
+    const keep=a.doorPts>0.05?(a.doorRing===0?"Осириса":"Тайм-менеджмента"):"двери";
+    it.push({v:"−"+Math.round((1-P.kidPress)*100)+"%",t:`<b class="w-b">Детский</b> - с детского всё вдвое слабее, кроме ${keep}`+(a.core?`: баллы ${dec(a.core)} → ${dec(a.core*a.mult)}`:", но резать нечего"),n:a.core*a.mult-a.core,g:1});
+  }
+  /* Первое место у двери - «Осирис - хранитель врат» (слово владельца 30.09), второе и третье - тайм-менеджмент. */
+  if(a.doorPts>0.05) it.push({v:sg(a.doorPts),t:a.doorRing===0?`<b class="w-b">Осирис</b> - хранитель врат, первое место у двери`
+    :`<b class="w-b">Тайм-менеджмент</b> - ${["первое","второе","третье"][a.doorRing]} место от двери`,n:a.doorPts});
+  if(a.killed) it.push({v:sg(P.spoil*a.killed),t:`<b class="w-b">${a.killed>1?"Большая аура":"Аура"}</b> - оккупировал ${a.lost.map(nameOf).join(", ")}`,n:P.spoil*a.killed,
+    sub:a.killed>1?a.lost.map(x=>({v:sg(P.spoil),t:`${nameOf(x)} - было удобным, стало вплотную к тебе`})):null});
+  if(a.gate>0&&P.pass) it.push({v:sg(P.pass*a.gate),t:`<b class="w-b">Шлагбаум</b> - усложнил проход к ${a.behindList.map(nameOf).join(", ")}`,n:P.pass*a.gate,
+    sub:a.gate>1?a.behindList.map(x=>({v:sg(P.pass),t:`к ${nameOf(x)} идти мимо тебя`})):null});
+  if(a.freeNb.length&&a.nbPts) it.push({v:sg(a.nbPts),t:`<b class="w-b">Ловушка</b> - ${a.freeNb.map(nameOf).join(" и ")} ${a.freeNb.length>1?"лучшие места":"лучшее место"}, следующий встанет к тебе`,n:a.nbPts,
+    sub:a.freeNb.length>1?a.freeNb.map(x=>({v:sg(P.freeNbPts),t:`${nameOf(x)}`})):null});
+  if(linear(r.t)) it.push({v:sgp(linear(r.t)),t:"детский писсуар - к итогу",n:linear(r.t)/100*refV,g:2});
+  if(r.nearChild) it.push({v:sgp(P.childNear),t:"вплотную к ребёнку - подозрительно",n:P.childNear/100*refV,g:2});
+  if(!it.length) it.push({v:"0",t:"никого не давишь и ничего не оккупировал",n:0});
+  /* Порядок: баллы от большего к меньшему, потом множители (они умножают сумму выше), потом % к итогу. */
+  return it.sort((x,y)=>(x.g||0)-(y.g||0)||y.n-x.n);
+}
+function alphaRows(r){
+  const it=alphaItems(r);
+  const rows=it.map(x=>{
+    const sub=x.sub||[];
+    return item(x.v,x.t,sub.length?"has-sub":"")+sub.map((z,k)=>item(z.v,z.t,k===sub.length-1?"sub last":"sub")).join("");
+  }).join("");
+  if(r.a.stall) return rows;
+  /* Откуда процент (слово владельца 30.09): твои очки против лучшего обычного места уровня = 100%. */
+  const ref=st.calc&&st.calc.aRef, tsub=[];
+  if(ref&&ref.a.v) tsub.push({v:fmtPct(r.aBase),t:`${dec(r.a.v)} из ${dec(ref.a.v)}`});
+  if(r.nearChild) tsub.push({v:sgp(P.childNear),t:"вплотную к ребёнку"});
+  return rows+item(fmtPct(r.aPct),`итого ${dec(r.a.v)} очк.`,"total"+(tsub.length?" has-sub":""))+tsub.map((z,k)=>item(z.v,z.t,k===tsub.length-1?"sub last":"sub")).join("");
+}
+function alphaShort(r){ return alphaItems(r).map(x=>`${x.t.replace(/<[^>]+>/g,"")} (${x.v})`).join(", "); }
+
+function betaItems(r,L){
+  const b=r.b, it=[];
+  if(r.o==="stall") return [{v:"0",t:`кабинка ${nameOf("stall")} - рядом никто не встанет, мимо никто не ходит`,n:0}];
+  if(r.t==="kid") return [{v:"0%",t:"взрослый у детского - все на тебя смотрят",n:0}];
+  if(r.t==="broken") return [{v:"0%",t:"у сломанного - странно и заметно",n:0}];
+  if(b.adjNow) it.push({v:sg(P.bNeighbor),t:"сразу вплотную к человеку",n:P.bNeighbor});
+  else if(b.pN>0.005) it.push({v:"+"+dec2(b.pN*P.bNeighbor),t:`шанс ${pctWord(b.pN)}, что к тебе встанут вплотную`,n:b.pN*P.bNeighbor});
+  if(b.pc>0.005) it.push({v:"+"+dec2(b.pc),t:`сосед за перегородкой (считается как ${dec(P.bDivider)})`,n:b.pc});
+  if(b.passes>0.005) it.push({v:"+"+dec2(P.bPass*b.passes),t:`мимо тебя пройдут ${dec(b.passes)} чел. от двери`,n:P.bPass*b.passes});
+  if(!it.length) it.push({v:"0",t:"рядом никого, мимо никто не ходит",n:0});
+  return it.sort((x,y)=>y.n-x.n);
+}
+function betaRows(r,L){
+  const it=betaItems(r,L);
+  return it.map(x=>item(x.v,x.t)).join("")+(isTrap(r)?"":item(fmtPct(r.bPct),`итого дискомфорт ${dec2(r.b.D)} - чем меньше, тем лучше`,"total"));
+}
+function betaShort(r,L){ return betaItems(r,L).map(x=>`${x.t} (${x.v})`).join(", "); }
+
+function alphaCore(r){
+  const a=r.a, k=a.kinds||[];
+  if(a.stall) return "Спрятался в кабинку. Альфа так не делает.";
+  const adj=k.filter(x=>x==="pin"||x==="open");  // Паровоз и Предостережение - не второй сосед вплотную
+  if(adj.length===2) return "Ван Дамм: двойное присутствие, давишь на обоих сразу.";
+  if(k.includes("train")) return "Паровоз: прижал соседа к соседу и давишь сквозь него на второго.";
+  if(k.includes("pin")) return "Прижал соседа: отступать ему некуда.";
+  if(k.includes("open")) return "Встал вплотную - давишь на соседа.";
+  if(k.includes("near")) return "Предостережение: стоишь через одно место от человека.";
+  return "Никого не прижал.";
+}
+function alphaVerdict(r){
+  const pre=r.nearChild?"Вплотную к ребёнку - подозрительно. ":r.t==="kid"?"Детский писсуар - подозрительно. ":r.t==="broken"?"Сломанный писсуар - демонстративно. ":"";
+  const mx=st.calc?Math.max(...st.calc.map(x=>x.aPct)):100;
+  return pre+alphaCore(r)+(r.aPct===mx&&!r.a.stall?" Лучший ход на уровне.":"");
+}
+function betaVerdict(r,L){
+  const b=r.b;
+  if(r.o==="stall") return "Кабинка. Рядом не встанет никто. Законный ход беты.";
+  if(isTrap(r)) return r.t==="kid" ? "Встал к детскому писсуару. На тебя смотрят все." : "Встал к сломанному писсуару. Это заметнее, чем кажется.";
+  if(b.adjNow) return "Встал вплотную к человеку. Бета так не рискует.";
+  if(r.bPct===100) return "Лучший выбор на этом уровне. Тебя почти не заметят.";
+  if(b.pN>=0.35) return "Высокий шанс, что к тебе пристроятся.";
+  if(b.passes>=0.8) return "Люди будут ходить у тебя за спиной.";
+  return "Неплохо, но был вариант тише.";
+}
+
+function renderPlay(){
+  const L=LEVELS[st.li], rev=st.chosen!==null;
+  document.querySelector("#play").className="stack "+st.mode;
+  $("modeChip").textContent=st.mode==="alpha"?"АЛЬФА":"БЕТА";
+  $("lvlNum").textContent=`Уровень ${st.li+1} из ${LEVELS.length}`;
+  $("dots").style.gridTemplateColumns=`repeat(${LEVELS.length},1fr)`;
+  $("dots").innerHTML=LEVELS.map((_,i)=>`<i class="${i===st.li?"now":st.results[i]?"done":""}"></i>`).join("");
+  $("jump").innerHTML=LEVELS.map((L,i)=>`<option value="${i}"${i===st.li?" selected":""}>${i+1}. ${L.name}</option>`).join("");
+  $("lvlName").textContent=L.name;
+  $("lvlTip").textContent=L.tip[st.mode];
+  const meta=[];
+  if(L.learn) meta.push(`<span class="tag learn">${L.learn==="Хардкор"?"Хардкор":`${L.step===1?"Новое правило":"Закрепляем"}: ${L.learn}`}</span>`);
+  if(st.mode==="beta") meta.push(L.k===0 ? "Больше никто не зайдёт" : `После тебя ${L.k===1?"зайдёт":"зайдут"} ${L.k} ${plural(L.k,"человек","человека","человек")}`);
+  meta.push(L.door==="center"?"Дверь по центру":L.door==="left"?"Дверь слева":"Дверь справа");
+  if(L.diff) meta.push(`Сложность ${L.diff}/5`);
+  $("lvlMeta").innerHTML=meta.map(m=>m.startsWith("<span")?m:`<span class="tag">${m}</span>`).join("");
+  renderScene();
+  renderFx(rev?st.calc.find(x=>x.o===st.chosen):null,L);
+  const res=$("result");
+  $("nextWrap").hidden=!rev;
+  if(!rev){ res.hidden=true; return; }
+  const r=st.calc.find(x=>x.o===st.chosen);
+  const pct=st.mode==="alpha"?r.aPct:r.bPct;
+  $("rPct").textContent=fmtPct(pct);
+  const neg=st.mode==="alpha"&&pct<0;
+  $("rScore").className="score"+(neg?" neg":"");
+  $("rStamp").hidden=!neg;
+  $("rLabel").textContent=MODE_NAME[st.mode];
+  $("rText").textContent=st.mode==="alpha"?alphaVerdict(r):betaVerdict(r,L);
+  const A=st.mode==="alpha", R=st.calc;
+  $("rWhy").innerHTML=A?alphaRows(r,L):betaRows(r,L);
+  const best=A?R.aBest:R.bBest, worst=A?R.aWorst:R.bWorst;
+  /* Строка «Лучший ход уровня - №N = 100%» снята (слово владельца 30.09): лучший ход виден на картинке. */
+  const isBest=(A?r.aPct:r.bPct)>=(A?best.aPct:best.bPct);
+  $("rBetter").hidden=isBest;
+  if(!isBest) $("rBetter").textContent=`Лучше было ${nameOf(best.o)}: ${A?alphaShort(best):betaShort(best,L)}.`;
+  $("next").textContent=st.li+1<LEVELS.length?"Дальше":"Итог";
+  res.hidden=false;
+  res.classList.remove("pop"); void res.offsetWidth; res.classList.add("pop");
+}
+
+/* Короткое имя бонуса - жирное название эффекта из разбора («Давление», «Аура»...), без расшифровки. */
+const fxName=t=>{ const m=t.match(/<b[^>]*>([^<]+)<\/b>/); return (m?m[1]:t.replace(/<[^>]+>/g,"").split(" - ")[0]).trim(); };
+const fxDetail=t=>{ const x=t.replace(/<[^>]+>/g,""), i=x.indexOf(" - "); return i<0?"":x.slice(i+3); };
+function renderFx(r,L){
+  const fl=$("floats"), cb=$("combo");
+  fl.innerHTML=""; cb.innerHTML=""; cb.hidden=true;
+  if(!r||st.mode!=="alpha"||r.a.stall) return;
+  const items=alphaItems(r).filter(it=>it.v!=="0"&&it.v!=="0%");
+  const g=geom(L), x=Math.min(88,Math.max(12,100*cxOf(g,r.o)/g.W)), y=100*110/g.H;
+  fl.innerHTML=items.map((it,k)=>`<span class="fl${isNegVal(it.v)?" neg":""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;animation-delay:${(0.85+0.4*k).toFixed(2)}s"><b>${it.v}</b> ${fxName(it.t)}</span>`).join("");
+  /* Главный эффект: «Ублюдок», если ушёл в минус, иначе бонус в баллах с самым большим вкладом.
+     Второй строкой - множители и % к итогу (слово владельца 30.09: «под давлением - множитель, например Закон не писан»). */
+  const bad=items.find(it=>r.a.v<0&&/Ублюдок/.test(it.t));
+  const top=bad||items.filter(it=>it.n>0&&!it.g).sort((a,b)=>b.n-a.n)[0];
+  const mods=bad?[]:items.filter(it=>it.g===1||it.g===2);
+  if(!top) return;
+  const det=fxDetail(top.t);
+  cb.className="combo"+(isNegVal(top.v)?" neg":"");
+  cb.style.cssText="--d:"+(0.95+0.4*items.length).toFixed(2)+"s";
+  cb.innerHTML=`<span class="c-name">${fxName(top.t)}</span><span class="c-val">${top.v}</span>`
+    +mods.map(m=>`<span class="c-mod${isNegVal(m.v)?" neg":""}">${fxName(m.t)} ${m.v}</span>`).join("")
+    +(det?`<span class="c-det">${det}</span>`:"");
+  cb.hidden=false;
+}
+function titleFor(mode,v){
+  /* v98: у альфы 100% - лучший ход без нападения; идеальная игра в среднем 184%, лучшая спокойная - 90% (замер 30.09). */
+  const A=[[170,"Альфа-самец ряда"],[130,"Уверенный альфа"],[90,"Альфа на полставки"],[50,"Скрытый бета"],[-Infinity,"Бета в костюме альфы"]];
+  const B=[[90,"Ниндзя писсуаров"],[70,"Профессиональный бета"],[50,"Бета-любитель"],[30,"Случайный альфа"],[-Infinity,"Альфа, который старался быть бетой"]];
+  return (mode==="alpha"?A:B).find(([t])=>v>=t)[1];
+}
+function played(){ return st.results.filter(Boolean); }
+function avg(){ const p=played(); return p.length?Math.round(p.reduce((s,r)=>s+r.pct,0)/p.length):0; }
+function renderEnd(){
+  const v=avg();
+  document.querySelector("#end").className="stack "+st.mode;
+  $("eMode").textContent=`Итог · режим ${MODE_NAME[st.mode]}`;
+  $("ePct").textContent=fmtPct(v);
+  $("eLabel").textContent=MODE_NAME[st.mode];
+  $("eTitle").textContent=titleFor(st.mode,v);
+  $("eNote").textContent=`Средний процент за ${played().length} ${plural(played().length,"уровень","уровня","уровней")}.`;
+  $("eList").innerHTML=st.results.map((r,i)=>!r?"":`<li><span class="nm">${i+1}. ${LEVELS[i].name}</span><span class="track"><span class="fill" style="display:block;width:${Math.max(0,Math.min(100,r.pct))}%"></span></span><span class="pc">${fmtPct(r.pct)}</span></li>`).join("");
+  $("other").textContent=st.mode==="alpha"?"Сыграть за бету":"Сыграть за альфу";
+  $("copied").hidden=true;
+  saveBest(st.mode,v);
+}
+function renderStart(){
+  $("startEyebrow").textContent=`Альфа или бета · ${LEVELS.length} ${plural(LEVELS.length,"уровень","уровня","уровней")}`;
+  const b=loadBest(), parts=[];
+  if(b.alpha!=null) parts.push(`альфа ${b.alpha}%`);
+  if(b.beta!=null) parts.push(`бета ${b.beta}%`);
+  $("bestLine").hidden=!parts.length;
+  $("bestLine").textContent=parts.length?"Твой рекорд: "+parts.join(", "):"";
+}
+function show(){
+  for(const id of ["start","play","end"]) $(id).hidden=st.screen!==id;
+  if(st.screen==="start") renderStart();
+  if(st.screen==="play"){ if(!st.calc) st.calc=computeLevel(st.li); renderPlay(); }
+  if(st.screen==="end") renderEnd();
+}
+function startMode(mode){ Object.assign(st,{screen:"play",mode,li:0,chosen:null,results:[],calc:computeLevel(0)}); show(); window.scrollTo(0,0); }
+function choose(o){
+  if(st.chosen!==null) return;
+  st.chosen=o==="stall"?"stall":Number(o);
+  const r=st.calc.find(x=>x.o===st.chosen);
+  st.results[st.li]={o:st.chosen,pct:st.mode==="alpha"?r.aPct:r.bPct};
+  renderPlay();
+}
+function next(){
+  if(st.li+1>=LEVELS.length){ st.screen="end"; show(); window.scrollTo(0,0); return; }
+  st.li++; st.chosen=null; st.calc=computeLevel(st.li); show(); window.scrollTo(0,0);
+}
+
+$("goAlpha").addEventListener("click",()=>startMode("alpha"));
+$("goBeta").addEventListener("click",()=>startMode("beta"));
+$("toMenu").addEventListener("click",()=>{ st.screen="start"; show(); });
+$("home").addEventListener("click",()=>{ st.screen="start"; show(); });
+$("again").addEventListener("click",()=>startMode(st.mode));
+$("other").addEventListener("click",()=>startMode(st.mode==="alpha"?"beta":"alpha"));
+$("next").addEventListener("click",next);
+$("jump").addEventListener("change",e=>{ st.li=Number(e.target.value); st.chosen=null; st.calc=computeLevel(st.li); show(); });
+$("scene").addEventListener("click",e=>{ const t=e.target.closest("[data-o]"); if(t) choose(t.dataset.o); });
+$("scene").addEventListener("keydown",e=>{ if(e.key!=="Enter"&&e.key!==" ") return; const t=e.target.closest("[data-o]"); if(t){ e.preventDefault(); choose(t.dataset.o); } });
+$("copy").addEventListener("click",()=>{
+  const v=avg(), text=`Я ${MODE_NAME[st.mode]} на ${v}% в игре COCK BLOCK -${titleFor(st.mode,v).toLowerCase()}. Сколько наберёшь ты?`;
+  const done=m=>{ $("copied").textContent=m; $("copied").hidden=false; };
+  try{ navigator.clipboard.writeText(text).then(()=>done("Скопировано. Вставь в чат."),()=>done(text)); }catch(e){ done(text); }
+});
+
+/* Панель «Баллы» (слово владельца 30.09) */
+const numTxt=v=>String(v).replace(".",",");
+function loadPoints(){ try{ const saved=JSON.parse(localStorage.getItem("ab-points")||"{}")||{};
+  if(saved.ver!==POINTS_VERSION||!saved.vals){ localStorage.removeItem("ab-points"); return; }
+  for(const k in saved.vals) if(k in P&&typeof saved.vals[k]==="number") P[k]=saved.vals[k]; }catch(e){} }
+function savePoints(){ try{ localStorage.setItem("ab-points",JSON.stringify({ver:POINTS_VERSION,vals:P})); }catch(e){} }
+function renderPoints(){
+  const groups=[...new Set(POINTS.map(x=>x.group))];
+  $("pointsTable").innerHTML=groups.map(g=>`<div class="pgroup"><p class="eyebrow">${g}</p>`+
+    POINTS.filter(x=>x.group===g).map(x=>`<div class="prow${P[x.key]!==POINTS_DEFAULT[x.key]?" changed":""}"><label for="pt-${x.key}">${x.label}</label>`+
+      `<input id="pt-${x.key}" data-k="${x.key}" type="text" inputmode="decimal" value="${numTxt(P[x.key])}"><span class="kind">${x.kind}</span></div>`).join("")+`</div>`).join("");
+}
+function recalc(){ if(st.screen==="play"){ st.calc=computeLevel(st.li); renderPlay(); } }
+function openPoints(){ renderPoints(); $("points").hidden=false; $("pointsMsg").hidden=true; $("points").scrollIntoView({behavior:"smooth",block:"start"}); }
+$("openPoints").addEventListener("click",openPoints);
+$("openPoints2").addEventListener("click",openPoints);
+$("closePoints").addEventListener("click",()=>{ $("points").hidden=true; });
+$("pointsTable").addEventListener("change",e=>{
+  const k=e.target.dataset&&e.target.dataset.k; if(!k) return;
+  const v=parseFloat(String(e.target.value).replace(",",".").replace("−","-"));
+  if(Number.isFinite(v)){ P[k]=v; savePoints(); recalc(); }
+  renderPoints();
+});
+$("resetPoints").addEventListener("click",()=>{ Object.assign(P,POINTS_DEFAULT); savePoints(); renderPoints(); recalc(); });
+$("copyPoints").addEventListener("click",()=>{
+  const lines=POINTS.map(x=>`${x.group} · ${x.label}: ${numTxt(P[x.key])} (${x.kind})`+(P[x.key]!==POINTS_DEFAULT[x.key]?` - было ${numTxt(POINTS_DEFAULT[x.key])}`:""));
+  const text="Баллы COCK BLOCK:\n"+lines.join("\n");
+  const done=m=>{ $("pointsMsg").textContent=m; $("pointsMsg").hidden=false; };
+  try{ navigator.clipboard.writeText(text).then(()=>done("Скопировано. Вставь мне в чат."),()=>done(text)); }catch(e){ done(text); }
+});
+loadPoints();
+
+function boot(data){
+  const d=data&&data.st;
+  if(d&&d.screen){ Object.assign(st,d,{calc:null}); if(st.screen==="play") st.calc=computeLevel(st.li); }
+  show();
+}
+try{ window.claude?.hot?.snapshot?.(()=>({st:{screen:st.screen,mode:st.mode,li:st.li,chosen:st.chosen,results:st.results}})); }catch(e){}
+window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+</script>
+
+<script>try{const w=window.Telegram&&window.Telegram.WebApp;if(w){w.ready();w.expand();}}catch(e){}</script>
+</body>
+</html>
